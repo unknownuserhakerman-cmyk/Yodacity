@@ -46,7 +46,7 @@
     margin-top: 18px;
   }
   label:first-of-type { margin-top: 0; }
-  input, textarea {
+  input {
     width: 100%;
     padding: 10px 14px;
     background: #0d1117;
@@ -57,12 +57,11 @@
     font-family: 'SF Mono', monospace;
     transition: border 0.2s;
   }
-  input:focus, textarea:focus {
+  input:focus {
     outline: none;
     border-color: #58a6ff;
     box-shadow: 0 0 0 2px rgba(88,166,255,0.15);
   }
-  textarea { resize: vertical; min-height: 60px; }
   .row { display: flex; gap: 12px; }
   .row > div { flex: 1; }
   .methods {
@@ -166,19 +165,19 @@
 <body>
 
 <div class="container">
-  <h1>🔗 Link Hyperlink / Masker</h1>
-  <div class="sub">Masks any URL under a legitimate-looking domain — <span class="badge">Red Team Tool</span></div>
+  <h1>&#128279; Link Hyperlink / Masker</h1>
+  <div class="sub">Masks any URL under a legitimate-looking domain &mdash; <span class="badge">Red Team Tool</span></div>
 
-  <label>🎯 Your Phishing / Target URL</label>
+  <label>&#127919; Your Phishing / Target URL</label>
   <input type="url" id="phishUrl" placeholder="https://your-phishing-page.com/roblox/login" value="">
 
-  <label>🎭 Mask Domain (what it should look like)</label>
+  <label>&#127917; Mask Domain (what it should look like)</label>
   <div class="row">
     <div><input type="text" id="maskDomain" value="roblox.com" placeholder="roblox.com"></div>
     <div><input type="text" id="maskPath" value="login/verify" placeholder="login/verify (optional)"></div>
   </div>
 
-  <label>⚙️ Masking Technique</label>
+  <label>&#9881;&#65039; Masking Technique</label>
   <div class="methods" id="methodContainer">
     <button data-method="at" class="active">@ Symbol Mask</button>
     <button data-method="subdomain">Subdomain Mask</button>
@@ -186,19 +185,19 @@
     <button data-method="html">HTML Hyperlink</button>
   </div>
 
-  <button class="btn-gen" id="generateBtn">✦ Generate Masked Link</button>
+  <button class="btn-gen" id="generateBtn">&#10022; Generate Masked Link</button>
 
   <div class="output-section" id="outputSection">
-    <div class="output-label">📋 Masked URL</div>
+    <div class="output-label">&#128203; Masked URL</div>
     <div class="output-box" id="outputBox"></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
-      <button class="btn-copy" id="copyBtn">📄 Copy to Clipboard</button>
-      <button class="btn-copy" id="copyHtmlBtn">🌐 Copy HTML Link Tag</button>
+      <button class="btn-copy" id="copyBtn">&#128196; Copy to Clipboard</button>
+      <button class="btn-copy" id="copyHtmlBtn">&#127760; Copy HTML Link Tag</button>
     </div>
-    <div class="output-label" style="margin-top:16px;">🔍 Preview</div>
+    <div class="output-label" style="margin-top:16px;">&#128270; Preview</div>
     <a class="preview-link" id="previewLink" target="_blank">Click to test (opens in new tab)</a>
     <div class="note">
-      <strong>How it works:</strong> The <code>@</code> symbol technique exploits how browsers handle URL authentication — everything before <code>@</code> is treated as a username, the real destination follows. Subdomain masking uses a trusted domain as a subdomain prefix. The HTML method generates an actual clickable hyperlink element.
+      <strong>How it works:</strong> The <code>@</code> symbol technique exploits how browsers handle URL authentication &mdash; everything before <code>@</code> is treated as a username, the real destination follows. Subdomain masking uses a trusted domain as a subdomain prefix. The HTML method generates an actual clickable hyperlink element.
     </div>
   </div>
 </div>
@@ -215,7 +214,6 @@ const copyBtn     = document.getElementById('copyBtn');
 const copyHtmlBtn = document.getElementById('copyHtmlBtn');
 let currentMethod = 'at';
 
-// Method selector
 document.querySelectorAll('.methods button').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.methods button').forEach(b => b.classList.remove('active'));
@@ -230,53 +228,43 @@ function generate() {
   const path    = maskPath.value.trim();
 
   if (!target) {
-    alert('Enter a target/phishing URL first.');
+    alert('Enter a target URL first.');
     return;
   }
 
   let finalUrl = '';
-  let htmlTag  = '';
 
   switch (currentMethod) {
     case 'at': {
-      // @ symbol mask: https://roblox.com-login@actual-phish.com
       const masked = domain + (path ? '-' + path : '');
       finalUrl = `https://${masked}@${target.replace(/^https?:\/\//, '')}`;
       break;
     }
     case 'subdomain': {
-      // Subdomain mask: https://roblox.com.actual-phish.com/login
       const cleanTarget = target.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
       const targetPath  = target.includes('/') ? '/' + target.split('/').slice(3).join('/') : '';
       finalUrl = `https://${domain}.${cleanTarget}${path ? '/' + path : targetPath}`;
       break;
     }
     case 'shorten': {
-      // Demonstrates masked shortened style: use @ with shorter path
       const shortPath = path || 'verify';
       finalUrl = `https://${domain}/${shortPath}@${target.replace(/^https?:\/\//, '')}`;
       break;
     }
     case 'html': {
-      // Actual HTML hyperlink element
       const label = domain + (path ? '/' + path : '');
-      htmlTag = `<a href="${target}" target="_blank" rel="noopener noreferrer" style="color:#58a6ff;text-decoration:underline;">${label}</a>`;
-      finalUrl = `Hyperlink HTML (see below) → ${target}`;
-      break;
+      const htmlTag = `<a href="${target}" target="_blank" rel="noopener noreferrer" style="color:#58a6ff;text-decoration:underline;">${label}</a>`;
+      outputBox.innerHTML = htmlTag;
+      previewLink.href = target;
+      previewLink.textContent = `&#128279; ${label} (clickable)`;
+      outputSec.classList.add('show');
+      return;
     }
   }
 
-  // Display
-  if (currentMethod === 'html') {
-    outputBox.innerHTML = htmlTag;
-    previewLink.href = target;
-    previewLink.textContent = `🔗 ${domain}${path ? '/' + path : ''} (clickable)`;
-  } else {
-    outputBox.textContent = finalUrl;
-    previewLink.href = finalUrl;
-    previewLink.textContent = finalUrl.length > 60 ? finalUrl.substring(0, 60) + '...' : finalUrl;
-  }
-
+  outputBox.textContent = finalUrl;
+  previewLink.href = finalUrl;
+  previewLink.textContent = finalUrl.length > 60 ? finalUrl.substring(0, 60) + '...' : finalUrl;
   outputSec.classList.add('show');
 }
 
@@ -285,20 +273,19 @@ generateBtn.addEventListener('click', generate);
 copyBtn.addEventListener('click', () => {
   const text = outputBox.textContent || outputBox.innerText;
   navigator.clipboard.writeText(text).then(() => {
-    copyBtn.textContent = '✓ Copied!';
-    setTimeout(() => { copyBtn.textContent = '📄 Copy to Clipboard'; }, 2000);
+    copyBtn.textContent = '&#10003; Copied!';
+    setTimeout(() => { copyBtn.textContent = '&#128196; Copy to Clipboard'; }, 2000);
   });
 });
 
 copyHtmlBtn.addEventListener('click', () => {
   const text = outputBox.innerHTML;
   navigator.clipboard.writeText(text).then(() => {
-    copyHtmlBtn.textContent = '✓ Copied!';
-    setTimeout(() => { copyHtmlBtn.textContent = '🌐 Copy HTML Link Tag'; }, 2000);
+    copyHtmlBtn.textContent = '&#10003; Copied!';
+    setTimeout(() => { copyHtmlBtn.textContent = '&#127760; Copy HTML Link Tag'; }, 2000);
   });
 });
 
-// Enter key
 phishUrl.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
 maskDomain.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
 maskPath.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
