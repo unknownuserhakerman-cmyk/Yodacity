@@ -1,133 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Link Masker</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f0f23; color: #e0e0e0;
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100vh; padding: 20px;
-    }
-    .card {
-      background: #1a1a2e; border-radius: 16px; padding: 40px;
-      max-width: 600px; width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    }
-    h1 { font-size: 24px; margin-bottom: 8px; color: #fff; }
-    .sub { color: #888; margin-bottom: 28px; font-size: 14px; }
-    label { display: block; margin-bottom: 6px; font-size: 14px; color: #aaa; }
-    input[type="text"], input[type="url"] {
-      width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #333;
-      background: #16213e; color: #fff; font-size: 15px; margin-bottom: 16px;
-      outline: none; transition: border 0.2s;
-    }
-    input:focus { border-color: #4fc3f7; }
-    .btn {
-      width: 100%; padding: 14px; border: none; border-radius: 8px;
-      font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s;
-    }
-    .btn-primary { background: #4fc3f7; color: #0f0f23; }
-    .btn-primary:hover { background: #29b6f6; }
-    .btn-copy { background: #2e7d32; color: #fff; margin-top: 8px; }
-    .btn-copy:hover { background: #388e3c; }
-    #result { margin-top: 20px; display: none; }
-    #result textarea {
-      width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333;
-      background: #16213e; color: #4fc3f7; font-size: 14px; min-height: 60px;
-      resize: vertical; font-family: monospace;
-    }
-    .final-link {
-      display: block; text-align: center; margin-top: 16px;
-      padding: 16px; background: #0d2137; border-radius: 8px;
-      border: 1px solid #4fc3f7; color: #4fc3f7; font-size: 18px;
-      text-decoration: none; font-weight: 600; transition: 0.2s;
-    }
-    .final-link:hover { background: #4fc3f7; color: #0f0f23; }
-    .error { color: #f44336; margin-top: 10px; font-size: 14px; }
-  </style>
 </head>
-<body>
-<div class="card">
-  <h1>🔗 Hyperlink Generator</h1>
-  <p class="sub">Shorten &amp; mask your links with a real redirect layer</p>
+<body style="background:#111;color:#eee;font-family:sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0">
+<div style="background:#1a1a2e;padding:30px;border-radius:12px;width:500px;max-width:90%">
+  <h2>🔗 Hyperlink Generator</h2>
+  <p style="color:#888;font-size:14px">Shorten & mask your links — works 100%</p>
 
-  <label>🎭 Display Text (what the victim sees)</label>
-  <input type="text" id="displayText" value="https://www.roblox.com/" placeholder="https://legit-site.com">
+  <label>🎭 Display Text (what victim sees):</label><br>
+  <input id="display" value="https://www.roblox.com/" style="width:100%;padding:10px;margin:8px 0 16px;border-radius:6px;border:1px solid #333;background:#16213e;color:#fff;font-size:14px">
 
-  <label>🎯 Your Actual URL (where it redirects)</label>
-  <input type="url" id="realUrl" placeholder="https://your-actual-page.com" value="https://example.com">
+  <label>🎯 Your Real URL (where it goes):</label><br>
+  <input id="real" value="https://example.com" style="width:100%;padding:10px;margin:8px 0 16px;border-radius:6px;border:1px solid #333;background:#16213e;color:#fff;font-size:14px">
 
-  <button class="btn btn-primary" onclick="generate()">🚀 Generate Hyperlink</button>
+  <button onclick="generate()" style="width:100%;padding:14px;background:#4fc3f7;color:#111;border:none;border-radius:6px;font-size:16px;font-weight:bold;cursor:pointer">🚀 GENERATE HYPERLINK</button>
 
-  <div id="result">
-    <label>📋 Result (click the button below or copy this HTML):</label>
-    <textarea id="output" readonly></textarea>
-    <a id="previewLink" class="final-link" href="#" target="_blank">🔍 Preview Link</a>
-    <button class="btn btn-copy" onclick="copyOutput()">📄 Copy to Clipboard</button>
-    <div id="errorMsg" class="error"></div>
+  <div id="result" style="display:none;margin-top:20px">
+    <hr style="border-color:#333">
+    <p style="margin:12px 0 6px;color:#4fc3f7;font-weight:bold">✅ CLICK THE BUTTON BELOW ↓</p>
+    <a id="linkBtn" href="#" target="_blank" style="display:block;text-align:center;padding:18px;background:#0d2137;border:2px solid #4fc3f7;border-radius:8px;color:#4fc3f7;font-size:18px;font-weight:bold;text-decoration:none;margin-bottom:12px">🔗 Loading...</a>
+    <button onclick="copyLink()" style="width:100%;padding:10px;background:#2e7d32;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px">📋 Copy HTML</button>
+    <p id="err" style="color:#f44336;margin-top:10px"></p>
   </div>
 </div>
 
 <script>
-async function generate() {
-  const displayText = document.getElementById('displayText').value.trim();
-  const realUrl = document.getElementById('realUrl').value.trim();
-  const resultDiv = document.getElementById('result');
-  const output = document.getElementById('output');
-  const previewLink = document.getElementById('previewLink');
-  const errorMsg = document.getElementById('errorMsg');
+function generate() {
+  const display = document.getElementById('display').value.trim();
+  const real = document.getElementById('real').value.trim();
+  const result = document.getElementById('result');
+  const linkBtn = document.getElementById('linkBtn');
+  const err = document.getElementById('err');
+  err.textContent = '';
+  result.style.display = 'none';
 
-  resultDiv.style.display = 'none';
-  errorMsg.textContent = '';
+  if (!real) { err.textContent = 'Enter a URL'; result.style.display = 'block'; return; }
+  try { new URL(real); } catch { err.textContent = 'Invalid URL (include https://)'; result.style.display = 'block'; return; }
 
-  if (!realUrl) {
-    errorMsg.textContent = 'Please enter a real URL.';
-    resultDiv.style.display = 'block';
-    return;
-  }
-
-  // Validate URL
-  try {
-    new URL(realUrl);
-  } catch {
-    errorMsg.textContent = 'Invalid URL format. Include https://';
-    resultDiv.style.display = 'block';
-    return;
-  }
-
-  try {
-    // Use TinyURL's official API directly
-    const resp = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(realUrl)}`);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const shortUrl = await resp.text();
-
-    if (!shortUrl || shortUrl.startsWith('Error')) {
-      throw new Error('TinyURL returned an error. Try again.');
+  // Use is.gd - no CORS issues, supports JSONP
+  const script = document.createElement('script');
+  const cb = 'cb' + Date.now();
+  window[cb] = function(data) {
+    if (data.errorcode) {
+      err.textContent = 'Error: ' + data.errormessage;
+      result.style.display = 'block';
+    } else {
+      const short = data.shorturl;
+      linkBtn.href = short;
+      linkBtn.textContent = '🔗 ' + display;
+      linkBtn.dataset.html = '<a href="' + short + '" target="_blank">' + display + '</a>';
+      result.style.display = 'block';
     }
-
-    // Generate the hyperlinked button as requested
-    const anchorHTML = `<a href="${shortUrl}" target="_blank">${displayText}</a>`;
-
-    output.value = anchorHTML;
-    previewLink.href = shortUrl;
-    previewLink.textContent = `🔗 ${displayText}`;
-    resultDiv.style.display = 'block';
-  } catch (err) {
-    errorMsg.textContent = `Shortener error: ${err.message}`;
-    resultDiv.style.display = 'block';
-  }
+    delete window[cb];
+    document.body.removeChild(script);
+  };
+  script.src = 'https://is.gd/create.php?format=json&callback=' + cb + '&url=' + encodeURIComponent(real);
+  document.body.appendChild(script);
 }
 
-function copyOutput() {
-  const output = document.getElementById('output');
-  output.select();
-  navigator.clipboard.writeText(output.value).then(() => {
-    const btn = document.querySelector('.btn-copy');
+function copyLink() {
+  const html = document.getElementById('linkBtn').dataset.html;
+  navigator.clipboard.writeText(html).then(() => {
+    const btn = event.target;
     btn.textContent = '✅ Copied!';
-    setTimeout(() => btn.textContent = '📄 Copy to Clipboard', 2000);
+    setTimeout(() => btn.textContent = '📋 Copy HTML', 2000);
   });
 }
 </script>
