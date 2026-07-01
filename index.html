@@ -1,171 +1,212 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Hyperlink</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f0f23;
-      color: #eee;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .box {
-      background: #1a1a2e;
-      border-radius: 14px;
-      padding: 24px;
-      max-width: 480px;
-      width: 100%;
-    }
-    h2 { margin-bottom: 4px; }
-    p.sub { color: #888; font-size: 13px; margin-bottom: 18px; }
-    label { font-size: 13px; color: #aaa; display: block; margin-bottom: 4px; }
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background: #16213e;
-      color: #fff;
-      font-size: 15px;
-      margin-bottom: 14px;
-    }
-    .go {
-      width: 100%;
-      padding: 14px;
-      background: #4fc3f7;
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    .go:active { opacity: 0.7; }
-    #result { display: none; margin-top: 18px; }
-    #result hr { border: none; border-top: 1px solid #333; margin-bottom: 14px; }
-    #thelink {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      background: #0d2137;
-      border: 2px solid #4fc3f7;
-      border-radius: 10px;
-      color: #4fc3f7;
-      font-size: 14px;
-      text-decoration: none;
-      text-align: center;
-      word-break: break-all;
-      margin-bottom: 10px;
-    }
-    #thelink:active { background: #4fc3f7; color: #000; }
-    .cp {
-      width: 100%;
-      padding: 12px;
-      background: #2e7d32;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-    .cp:active { opacity: 0.7; }
-    #err { color: #f44336; margin-top: 8px; font-size: 13px; }
-    #info { color: #666; font-size: 11px; margin-top: 8px; word-break: break-all; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Link Masker</title>
+<style>
+* { box-sizing:border-box;margin:0;padding:0 }
+body { font-family:Arial,sans-serif;background:#0f0f23;color:#eee;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px }
+.card { background:#1a1a2e;border-radius:14px;padding:24px;max-width:500px;width:100% }
+h1 { font-size:20px;margin-bottom:4px }
+.sub { color:#888;font-size:13px;margin-bottom:18px }
+label { display:block;font-size:13px;color:#aaa;margin-bottom:4px }
+input { width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#16213e;color:#fff;font-size:15px;margin-bottom:14px }
+.go { width:100%;padding:14px;background:#4fc3f7;color:#000;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer }
+.go:active { opacity:.7 }
+#result { display:none;margin-top:18px }
+#result hr { border:none;border-top:1px solid #333;margin-bottom:14px }
+#preview { display:block;width:100%;padding:16px;background:#0d2137;border:2px solid #4fc3f7;border-radius:10px;color:#4fc3f7;font-size:14px;text-decoration:none;text-align:center;word-break:break-all;margin-bottom:12px }
+#preview:active { background:#4fc3f7;color:#000 }
+.code { background:#111;border:1px solid #333;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#4fc3f7;word-break:break-all;margin-bottom:10px;min-height:40px;white-space:pre-wrap }
+.btns { display:flex;gap:8px }
+.btns button { flex:1;padding:12px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer }
+.cp { background:#2e7d32;color:#fff }
+.dc { background:#5865F2;color:#fff }
+#err { color:#f44336;font-size:13px;margin-top:8px }
+#info { color:#666;font-size:11px;margin-top:6px;word-break:break-all }
+.fallback { background:#1a0a0a;border:1px solid #f44336;border-radius:8px;padding:12px;margin-top:10px;font-size:12px;color:#ff8;display:none }
+</style>
 </head>
 <body>
-<div class="box">
-  <h2>🔗 Link Masker</h2>
-  <p class="sub">👇 You type a fake link → it shows that but redirects to yours</p>
+<div class="card">
+  <h1>🔗 Link Masker</h1>
+  <p class="sub">Fake URL shows — real URL hides behind it</p>
 
-  <label>🎭 Fake URL (what they see)</label>
-  <input id="fake" value="https://www.roblox.com/games/4483381587/" placeholder="https://www.roblox.com/...">
+  <label>🎭 FAKE URL (what victim sees)</label>
+  <input id="fake" value="https://www.roblox.com/games/4483381587/">
 
-  <label>🎯 Real URL (where it goes)</label>
-  <input id="real" value="https://example.com" placeholder="https://your-site.com">
+  <label>🎯 REAL URL (where it goes)</label>
+  <input id="real" value="https://example.com">
 
-  <button class="go" onclick="doit()">🔗 MAKE HYPERLINK</button>
+  <button class="go" onclick="generate()">🔗 GENERATE</button>
 
   <div id="result">
     <hr>
-    <p style="font-size:13px;color:#4fc3f7;font-weight:600;margin-bottom:10px">✅ TAP THE BUTTON BELOW:</p>
-    <a id="thelink" href="#" target="_blank">🔗 Loading...</a>
-    <button class="cp" onclick="copyit(event)">📋 Copy HTML Code</button>
+    <p style="font-size:13px;color:#4fc3f7;font-weight:600;margin-bottom:8px">✅ MASKED LINK:</p>
+    <a id="preview" href="#" target="_blank">🔗 Loading...</a>
+
+    <p style="font-size:13px;color:#aaa;margin:12px 0 6px;font-weight:600">📋 Copy this:</p>
+    <div class="code" id="output">...</div>
+
+    <div class="btns">
+      <button class="cp" onclick="copy('html')">📋 Copy HTML</button>
+      <button class="dc" onclick="copy('discord')">💬 Copy Discord</button>
+    </div>
+
     <div id="err"></div>
     <div id="info"></div>
+    <div class="fallback" id="fallback"></div>
   </div>
 </div>
 
 <script>
-function doit() {
+function generate() {
   var fake = document.getElementById('fake').value.trim();
   var real = document.getElementById('real').value.trim();
-  var el = document.getElementById('thelink');
+  var preview = document.getElementById('preview');
+  var output = document.getElementById('output');
   var err = document.getElementById('err');
   var info = document.getElementById('info');
+  var fallback = document.getElementById('fallback');
   var result = document.getElementById('result');
 
   err.textContent = '';
   info.textContent = '';
+  fallback.style.display = 'none';
   result.style.display = 'none';
 
   if (!fake) fake = 'https://www.roblox.com/';
-  if (!real) { err.textContent = 'Put a real URL'; result.style.display = 'block'; return; }
+  if (!real) { err.textContent = 'Put your real URL'; result.style.display = 'block'; return; }
   try { new URL(real); } catch(e) { err.textContent = 'Bad URL. Needs https://'; result.style.display = 'block'; return; }
 
-  // Use is.gd JSONP — works on ALL browsers, file://, mobile, everything
-  var cb = 'cb' + Math.random().toString(36).slice(2);
+  info.textContent = 'Working...';
+
+  // Try JSONP with is.gd
+  var cb = 'cb' + Math.random().toString(36).slice(2,10);
   window[cb] = function(d) {
     if (d.errorcode) {
       err.textContent = 'Error: ' + d.errormessage;
+      showFallback(fake, real);
     } else {
-      el.href = d.shorturl;
-      el.textContent = '🔗 ' + fake;
-      el.dataset.html = '<a href="' + d.shorturl + '" target="_blank">' + fake + '</a>';
-      info.textContent = 'Short URL: ' + d.shorturl;
+      showResult(fake, d.shorturl);
     }
-    result.style.display = 'block';
-    delete window[cb];
-    document.body.removeChild(document.getElementById('s' + cb));
+    cleanup(cb);
   };
 
   var s = document.createElement('script');
-  s.id = 's' + cb;
+  s.id = 'js' + cb;
   s.src = 'https://is.gd/create.php?format=json&callback=' + cb + '&url=' + encodeURIComponent(real);
   document.body.appendChild(s);
 
-  // timeout fallback
+  // Timeout - if JSONP blocked, show fallback
   setTimeout(function() {
-    if (result.style.display === 'none') {
-      err.textContent = 'Request timed out. Check your internet.';
-      result.style.display = 'block';
+    if (!preview.dataset.done) {
+      cleanup(cb);
+      showFallback(fake, real);
     }
-  }, 10000);
+  }, 5000);
 }
 
-function copyit(e) {
-  var html = document.getElementById('thelink').dataset.html;
+function showResult(fake, short) {
+  var preview = document.getElementById('preview');
+  var output = document.getElementById('output');
+  var info = document.getElementById('info');
+  var result = document.getElementById('result');
+
+  preview.href = short;
+  preview.textContent = '🔗 ' + fake;
+  preview.dataset.done = '1';
+
+  var discord = '[' + fake + '](' + short + ')';
+  var html = '<a href="' + short + '" target="_blank">' + fake + '</a>';
+
+  preview.dataset.html = html;
+  preview.dataset.discord = discord;
+  output.textContent = discord;
+  output.dataset.mode = 'discord';
+
+  info.textContent = 'Short URL: ' + short;
+  result.style.display = 'block';
+}
+
+function showFallback(fake, real) {
+  var info = document.getElementById('info');
+  var err = document.getElementById('err');
+  var fallback = document.getElementById('fallback');
+  var output = document.getElementById('output');
+  var preview = document.getElementById('preview');
+  var result = document.getElementById('result');
+
+  err.textContent = 'Auto-shortener blocked by browser. Using manual mode.';
+  info.textContent = '';
+
+  // Show manual instructions
+  fallback.innerHTML = '⚠️ <b>Your browser blocked the API.</b> Do this manually:<br><br>'
+    + '1. Go to <a href="https://is.gd" target="_blank" style="color:#4fc3f7">is.gd</a><br>'
+    + '2. Paste this URL: <b style="color:#fff;word-break:break-all">' + real + '</b><br>'
+    + '3. Click Shorten<br>'
+    + '4. Copy the short URL it gives you<br>'
+    + '5. Paste it in the box below and click DONE';
+
+  fallback.style.display = 'block';
+
+  // Add manual input
+  var manualDiv = document.createElement('div');
+  manualDiv.id = 'manualDiv';
+  manualDiv.innerHTML = '<label style="margin-top:10px">✏️ Paste short URL from is.gd:</label>'
+    + '<input id="manualShort" placeholder="https://is.gd/abc123">'
+    + '<button class="go" onclick="manualDone()" style="font-size:14px">✅ DONE</button>';
+  fallback.appendChild(manualDiv);
+
+  // Show partial result
+  preview.textContent = '🔗 ' + fake + ' (waiting for short URL)';
+  output.textContent = '[Step 1: Shorten your URL at is.gd first]';
+  result.style.display = 'block';
+}
+
+function manualDone() {
+  var short = document.getElementById('manualShort').value.trim();
+  var fake = document.getElementById('fake').value.trim();
+  if (!fake) fake = 'https://www.roblox.com/';
+  if (!short) { document.getElementById('err').textContent = 'Paste the short URL first'; return; }
+
+  document.getElementById('err').textContent = '';
+  showResult(fake, short);
+  document.getElementById('info').textContent = '✅ Manual mode - short URL: ' + short;
+}
+
+function cleanup(cb) {
+  try {
+    delete window[cb];
+    var s = document.getElementById('js' + cb);
+    if (s) document.body.removeChild(s);
+  } catch(e) {}
+}
+
+function copy(mode) {
+  var preview = document.getElementById('preview');
+  var text = mode === 'html' ? preview.dataset.html : preview.dataset.discord;
+  if (!text) return;
+
+  var output = document.getElementById('output');
+  output.textContent = text;
+
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(html).then(function() {
-      e.target.textContent = '✅ Copied!';
-      setTimeout(function() { e.target.textContent = '📋 Copy HTML Code'; }, 2000);
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = event.target;
+      var orig = btn.textContent;
+      btn.textContent = '✅ Copied!';
+      setTimeout(function() { btn.textContent = orig; }, 2000);
     });
   } else {
     var ta = document.createElement('textarea');
-    ta.value = html;
+    ta.value = text;
     ta.style.cssText = 'position:fixed;left:-9999px';
     document.body.appendChild(ta);
     ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
-    e.target.textContent = '✅ Copied!';
-    setTimeout(function() { e.target.textContent = '📋 Copy HTML Code'; }, 2000);
   }
 }
 </script>
