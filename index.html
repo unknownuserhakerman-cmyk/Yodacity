@@ -18,20 +18,22 @@ input { width:100%;padding:12px;border-radius:8px;border:1px solid #333;backgrou
 #result hr { border:none;border-top:1px solid #333;margin-bottom:14px }
 #preview { display:block;width:100%;padding:16px;background:#0d2137;border:2px solid #4fc3f7;border-radius:10px;color:#4fc3f7;font-size:14px;text-decoration:none;text-align:center;word-break:break-all;margin-bottom:12px }
 #preview:active { background:#4fc3f7;color:#000 }
-.code { background:#111;border:1px solid #333;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#4fc3f7;word-break:break-all;margin-bottom:10px;min-height:40px;white-space:pre-wrap }
+.code { background:#111;border:1px solid #333;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#4fc3f7;word-break:break-all;margin-bottom:10px;min-height:40px }
 .btns { display:flex;gap:8px }
 .btns button { flex:1;padding:12px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer }
 .cp { background:#2e7d32;color:#fff }
 .dc { background:#5865F2;color:#fff }
 #err { color:#f44336;font-size:13px;margin-top:8px }
 #info { color:#666;font-size:11px;margin-top:6px;word-break:break-all }
-.fallback { background:#1a0a0a;border:1px solid #f44336;border-radius:8px;padding:12px;margin-top:10px;font-size:12px;color:#ff8;display:none }
+#manualBox { display:none;margin-top:12px;padding:12px;background:#1a0a0a;border:1px solid #f44336;border-radius:8px }
+#manualBox label { color:#ff8;font-size:12px }
+#manualBox input { background:#111;border-color:#f44336;color:#fff }
 </style>
 </head>
 <body>
 <div class="card">
   <h1>🔗 Link Masker</h1>
-  <p class="sub">Fake URL shows — real URL hides behind it</p>
+  <p class="sub">Uses <b>lnk.ua</b> — shows fake URL, goes to your real one</p>
 
   <label>🎭 FAKE URL (what victim sees)</label>
   <input id="fake" value="https://www.roblox.com/games/4483381587/">
@@ -43,10 +45,10 @@ input { width:100%;padding:12px;border-radius:8px;border:1px solid #333;backgrou
 
   <div id="result">
     <hr>
-    <p style="font-size:13px;color:#4fc3f7;font-weight:600;margin-bottom:8px">✅ MASKED LINK:</p>
+    <p style="font-size:13px;color:#4fc3f7;font-weight:600;margin-bottom:8px">✅ CLICK THE LINK BELOW:</p>
     <a id="preview" href="#" target="_blank">🔗 Loading...</a>
 
-    <p style="font-size:13px;color:#aaa;margin:12px 0 6px;font-weight:600">📋 Copy this:</p>
+    <p style="font-size:13px;color:#aaa;margin:12px 0 6px;font-weight:600">📋 Copy this to paste:</p>
     <div class="code" id="output">...</div>
 
     <div class="btns">
@@ -56,7 +58,15 @@ input { width:100%;padding:12px;border-radius:8px;border:1px solid #333;backgrou
 
     <div id="err"></div>
     <div id="info"></div>
-    <div class="fallback" id="fallback"></div>
+
+    <div id="manualBox">
+      <p style="color:#ff8;font-size:12px;margin-bottom:8px">⚠️ Auto-API blocked. Get short link manually:</p>
+      <label>1. Open <a href="https://lnk.ua/en" target="_blank" style="color:#4fc3f7">lnk.ua</a></label>
+      <label>2. Paste your real URL there, click Shorten</label>
+      <label>3. Copy the shortened URL and paste below:</label>
+      <input id="manualShort" placeholder="https://lnk.ua/abc123">
+      <button class="go" onclick="manualDone()" style="font-size:14px;margin-top:4px">✅ USE THIS SHORT URL</button>
+    </div>
   </div>
 </div>
 
@@ -68,50 +78,49 @@ function generate() {
   var output = document.getElementById('output');
   var err = document.getElementById('err');
   var info = document.getElementById('info');
-  var fallback = document.getElementById('fallback');
+  var manualBox = document.getElementById('manualBox');
   var result = document.getElementById('result');
 
   err.textContent = '';
   info.textContent = '';
-  fallback.style.display = 'none';
+  manualBox.style.display = 'none';
   result.style.display = 'none';
 
   if (!fake) fake = 'https://www.roblox.com/';
   if (!real) { err.textContent = 'Put your real URL'; result.style.display = 'block'; return; }
   try { new URL(real); } catch(e) { err.textContent = 'Bad URL. Needs https://'; result.style.display = 'block'; return; }
 
-  info.textContent = 'Working...';
+  info.textContent = 'Connecting to lnk.ua...';
 
-  // Try JSONP with is.gd
-  var cb = 'cb' + Math.random().toString(36).slice(2,10);
-  window[cb] = function(d) {
-    if (d.errorcode) {
-      err.textContent = 'Error: ' + d.errormessage;
-      showFallback(fake, real);
+  // Try POST to lnk.ua API with Bearer public
+  fetch('https://lnk.ua/api/v1/link/create', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer public',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ url: real })
+  })
+  .then(r => r.json())
+  .then(data => {
+    var short = data.shortUrl || data.short_url || data.link || (data.data && data.data.shortUrl) || '';
+    if (short) {
+      showResult(fake, short);
+      info.textContent = 'Short URL: ' + short;
     } else {
-      showResult(fake, d.shorturl);
+      err.textContent = 'lnk.ua response: ' + JSON.stringify(data);
+      showManual(fake);
     }
-    cleanup(cb);
-  };
-
-  var s = document.createElement('script');
-  s.id = 'js' + cb;
-  s.src = 'https://is.gd/create.php?format=json&callback=' + cb + '&url=' + encodeURIComponent(real);
-  document.body.appendChild(s);
-
-  // Timeout - if JSONP blocked, show fallback
-  setTimeout(function() {
-    if (!preview.dataset.done) {
-      cleanup(cb);
-      showFallback(fake, real);
-    }
-  }, 5000);
+  })
+  .catch(function(e) {
+    info.textContent = 'Auto failed (' + e.message + '). Using manual method.';
+    showManual(fake);
+  });
 }
 
 function showResult(fake, short) {
   var preview = document.getElementById('preview');
   var output = document.getElementById('output');
-  var info = document.getElementById('info');
   var result = document.getElementById('result');
 
   preview.href = short;
@@ -124,64 +133,26 @@ function showResult(fake, short) {
   preview.dataset.html = html;
   preview.dataset.discord = discord;
   output.textContent = discord;
-  output.dataset.mode = 'discord';
-
-  info.textContent = 'Short URL: ' + short;
   result.style.display = 'block';
 }
 
-function showFallback(fake, real) {
-  var info = document.getElementById('info');
-  var err = document.getElementById('err');
-  var fallback = document.getElementById('fallback');
-  var output = document.getElementById('output');
-  var preview = document.getElementById('preview');
-  var result = document.getElementById('result');
-
-  err.textContent = 'Auto-shortener blocked by browser. Using manual mode.';
-  info.textContent = '';
-
-  // Show manual instructions
-  fallback.innerHTML = '⚠️ <b>Your browser blocked the API.</b> Do this manually:<br><br>'
-    + '1. Go to <a href="https://is.gd" target="_blank" style="color:#4fc3f7">is.gd</a><br>'
-    + '2. Paste this URL: <b style="color:#fff;word-break:break-all">' + real + '</b><br>'
-    + '3. Click Shorten<br>'
-    + '4. Copy the short URL it gives you<br>'
-    + '5. Paste it in the box below and click DONE';
-
-  fallback.style.display = 'block';
-
-  // Add manual input
-  var manualDiv = document.createElement('div');
-  manualDiv.id = 'manualDiv';
-  manualDiv.innerHTML = '<label style="margin-top:10px">✏️ Paste short URL from is.gd:</label>'
-    + '<input id="manualShort" placeholder="https://is.gd/abc123">'
-    + '<button class="go" onclick="manualDone()" style="font-size:14px">✅ DONE</button>';
-  fallback.appendChild(manualDiv);
-
-  // Show partial result
-  preview.textContent = '🔗 ' + fake + ' (waiting for short URL)';
-  output.textContent = '[Step 1: Shorten your URL at is.gd first]';
-  result.style.display = 'block';
+function showManual(fake) {
+  document.getElementById('manualBox').style.display = 'block';
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('preview').textContent = '🔗 ' + fake + ' (waiting for short URL)';
+  document.getElementById('output').textContent = '[Get short URL from lnk.ua first]';
+  document.getElementById('err').textContent = '';
 }
 
 function manualDone() {
   var short = document.getElementById('manualShort').value.trim();
   var fake = document.getElementById('fake').value.trim();
   if (!fake) fake = 'https://www.roblox.com/';
-  if (!short) { document.getElementById('err').textContent = 'Paste the short URL first'; return; }
-
+  if (!short) { document.getElementById('err').textContent = 'Paste the short URL from lnk.ua'; return; }
   document.getElementById('err').textContent = '';
   showResult(fake, short);
-  document.getElementById('info').textContent = '✅ Manual mode - short URL: ' + short;
-}
-
-function cleanup(cb) {
-  try {
-    delete window[cb];
-    var s = document.getElementById('js' + cb);
-    if (s) document.body.removeChild(s);
-  } catch(e) {}
+  document.getElementById('info').textContent = '✅ Manual — short URL: ' + short;
+  document.getElementById('manualBox').style.display = 'none';
 }
 
 function copy(mode) {
@@ -189,8 +160,7 @@ function copy(mode) {
   var text = mode === 'html' ? preview.dataset.html : preview.dataset.discord;
   if (!text) return;
 
-  var output = document.getElementById('output');
-  output.textContent = text;
+  document.getElementById('output').textContent = text;
 
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(function() {
