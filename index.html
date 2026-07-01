@@ -7,10 +7,10 @@
 <body style="background:#111;color:#eee;font-family:sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0">
 <div style="background:#1a1a2e;padding:30px;border-radius:12px;width:500px;max-width:90%">
   <h2>🔗 Hyperlink Generator</h2>
-  <p style="color:#888;font-size:14px">Shorten & mask your links — works 100%</p>
+  <p style="color:#888;font-size:14px">Uses <b>lnk.ink</b> — 100% working</p>
 
   <label>🎭 Display Text (what victim sees):</label><br>
-  <input id="display" value="https://www.roblox.com/" style="width:100%;padding:10px;margin:8px 0 16px;border-radius:6px;border:1px solid #333;background:#16213e;color:#fff;font-size:14px">
+  <input id="display" value="https://www.roblox.com/games/4483381587/" style="width:100%;padding:10px;margin:8px 0 16px;border-radius:6px;border:1px solid #333;background:#16213e;color:#fff;font-size:14px">
 
   <label>🎯 Your Real URL (where it goes):</label><br>
   <input id="real" value="https://example.com" style="width:100%;padding:10px;margin:8px 0 16px;border-radius:6px;border:1px solid #333;background:#16213e;color:#fff;font-size:14px">
@@ -19,10 +19,11 @@
 
   <div id="result" style="display:none;margin-top:20px">
     <hr style="border-color:#333">
-    <p style="margin:12px 0 6px;color:#4fc3f7;font-weight:bold">✅ CLICK THE BUTTON BELOW ↓</p>
-    <a id="linkBtn" href="#" target="_blank" style="display:block;text-align:center;padding:18px;background:#0d2137;border:2px solid #4fc3f7;border-radius:8px;color:#4fc3f7;font-size:18px;font-weight:bold;text-decoration:none;margin-bottom:12px">🔗 Loading...</a>
-    <button onclick="copyLink()" style="width:100%;padding:10px;background:#2e7d32;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px">📋 Copy HTML</button>
+    <p style="margin:12px 0 6px;color:#4fc3f7;font-weight:bold">✅ HYPERLINKED BUTTON ↓</p>
+    <a id="linkBtn" href="#" target="_blank" style="display:block;text-align:center;padding:18px;background:#0d2137;border:2px solid #4fc3f7;border-radius:8px;color:#4fc3f7;font-size:16px;font-weight:bold;text-decoration:none;margin-bottom:12px;word-break:break-all">🔗 Loading...</a>
+    <button onclick="copyLink(event)" style="width:100%;padding:10px;background:#2e7d32;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px">📋 Copy HTML</button>
     <p id="err" style="color:#f44336;margin-top:10px"></p>
+    <p id="debug" style="color:#888;font-size:12px;margin-top:8px"></p>
   </div>
 </div>
 
@@ -33,39 +34,61 @@ function generate() {
   const result = document.getElementById('result');
   const linkBtn = document.getElementById('linkBtn');
   const err = document.getElementById('err');
+  const debug = document.getElementById('debug');
   err.textContent = '';
+  debug.textContent = '';
   result.style.display = 'none';
 
   if (!real) { err.textContent = 'Enter a URL'; result.style.display = 'block'; return; }
   try { new URL(real); } catch { err.textContent = 'Invalid URL (include https://)'; result.style.display = 'block'; return; }
 
-  // Use is.gd - no CORS issues, supports JSONP
-  const script = document.createElement('script');
-  const cb = 'cb' + Date.now();
-  window[cb] = function(data) {
-    if (data.errorcode) {
-      err.textContent = 'Error: ' + data.errormessage;
-      result.style.display = 'block';
-    } else {
-      const short = data.shorturl;
-      linkBtn.href = short;
+  // Try lnk.ink first, fallback to is.gd
+  const url = 'https://lnk.ink/api/links/create?url=' + encodeURIComponent(real) + '&format=simple';
+
+  fetch(url)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(shortUrl => {
+      shortUrl = shortUrl.trim();
+      if (shortUrl.startsWith('Error') || shortUrl.startsWith('{')) throw new Error('API returned: ' + shortUrl);
+      
+      linkBtn.href = shortUrl;
       linkBtn.textContent = '🔗 ' + display;
-      linkBtn.dataset.html = '<a href="' + short + '" target="_blank">' + display + '</a>';
+      linkBtn.dataset.html = '<a href="' + shortUrl + '" target="_blank">' + display + '</a>';
       result.style.display = 'block';
-    }
-    delete window[cb];
-    document.body.removeChild(script);
-  };
-  script.src = 'https://is.gd/create.php?format=json&callback=' + cb + '&url=' + encodeURIComponent(real);
-  document.body.appendChild(script);
+      debug.textContent = 'Short URL: ' + shortUrl;
+    })
+    .catch(e => {
+      // Fallback to is.gd JSONP
+      debug.textContent = 'lnk.ink failed: ' + e.message + '. Trying is.gd...';
+      const script = document.createElement('script');
+      const cb = 'cb' + Date.now();
+      window[cb] = function(data) {
+        if (data.errorcode) {
+          err.textContent = 'Error: ' + data.errormessage;
+        } else {
+          const s = data.shorturl;
+          linkBtn.href = s;
+          linkBtn.textContent = '🔗 ' + display;
+          linkBtn.dataset.html = '<a href="' + s + '" target="_blank">' + display + '</a>';
+          debug.textContent = 'Short URL: ' + s + ' (via is.gd)';
+        }
+        result.style.display = 'block';
+        delete window[cb];
+        document.body.removeChild(script);
+      };
+      script.src = 'https://is.gd/create.php?format=json&callback=' + cb + '&url=' + encodeURIComponent(real);
+      document.body.appendChild(script);
+    });
 }
 
-function copyLink() {
+function copyLink(event) {
   const html = document.getElementById('linkBtn').dataset.html;
   navigator.clipboard.writeText(html).then(() => {
-    const btn = event.target;
-    btn.textContent = '✅ Copied!';
-    setTimeout(() => btn.textContent = '📋 Copy HTML', 2000);
+    event.target.textContent = '✅ Copied!';
+    setTimeout(() => event.target.textContent = '📋 Copy HTML', 2000);
   });
 }
 </script>
