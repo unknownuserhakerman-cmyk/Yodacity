@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Link Masker — Hyperlink Tool</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .container {
+    max-width: 720px;
+    width: 100%;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 36px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  h1 {
+    font-size: 24px;
+    margin-bottom: 6px;
+    color: #f0f6fc;
+  }
+  .sub {
+    color: #8b949e;
+    font-size: 14px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #21262d;
+    padding-bottom: 16px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #c9d1d9;
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+  label:first-of-type { margin-top: 0; }
+  input, textarea {
+    width: 100%;
+    padding: 10px 14px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    color: #c9d1d9;
+    font-size: 14px;
+    font-family: 'SF Mono', monospace;
+    transition: border 0.2s;
+  }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 2px rgba(88,166,255,0.15);
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  .row { display: flex; gap: 12px; }
+  .row > div { flex: 1; }
+  .methods {
+    display: flex;
+    gap: 10px;
+    margin: 18px 0 8px;
+    flex-wrap: wrap;
+  }
+  .methods button {
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1px solid #30363d;
+    background: #0d1117;
+    color: #c9d1d9;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .methods button.active {
+    background: #1f6feb;
+    border-color: #1f6feb;
+    color: #fff;
+  }
+  .methods button:hover { border-color: #58a6ff; }
+  .btn-gen {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: #238636;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-gen:hover { background: #2ea043; }
+  .output-section { margin-top: 24px; display: none; }
+  .output-section.show { display: block; }
+  .output-box {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px;
+    word-break: break-all;
+    font-family: 'SF Mono', monospace;
+    font-size: 13px;
+    color: #7ee787;
+    margin-bottom: 12px;
+    user-select: all;
+  }
+  .output-label {
+    font-size: 12px;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .btn-copy {
+    padding: 8px 20px;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #c9d1d9;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .btn-copy:hover { background: #30363d; }
+  .preview-link {
+    display: inline-block;
+    margin-top: 8px;
+    color: #58a6ff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .preview-link:hover { color: #79c0ff; }
+  .note {
+    font-size: 12px;
+    color: #8b949e;
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: #0d1117;
+    border-radius: 6px;
+    border-left: 3px solid #d29922;
+  }
+  .badge {
+    display: inline-block;
+    background: #1f6feb22;
+    color: #58a6ff;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    border: 1px solid #1f6feb44;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🔗 Link Hyperlink / Masker</h1>
+  <div class="sub">Masks any URL under a legitimate-looking domain — <span class="badge">Red Team Tool</span></div>
+
+  <label>🎯 Your Phishing / Target URL</label>
+  <input type="url" id="phishUrl" placeholder="https://your-phishing-page.com/roblox/login" value="">
+
+  <label>🎭 Mask Domain (what it should look like)</label>
+  <div class="row">
+    <div><input type="text" id="maskDomain" value="roblox.com" placeholder="roblox.com"></div>
+    <div><input type="text" id="maskPath" value="login/verify" placeholder="login/verify (optional)"></div>
+  </div>
+
+  <label>⚙️ Masking Technique</label>
+  <div class="methods" id="methodContainer">
+    <button data-method="at" class="active">@ Symbol Mask</button>
+    <button data-method="subdomain">Subdomain Mask</button>
+    <button data-method="shorten">URL Shortener + Mask</button>
+    <button data-method="html">HTML Hyperlink</button>
+  </div>
+
+  <button class="btn-gen" id="generateBtn">✦ Generate Masked Link</button>
+
+  <div class="output-section" id="outputSection">
+    <div class="output-label">📋 Masked URL</div>
+    <div class="output-box" id="outputBox"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn-copy" id="copyBtn">📄 Copy to Clipboard</button>
+      <button class="btn-copy" id="copyHtmlBtn">🌐 Copy HTML Link Tag</button>
+    </div>
+    <div class="output-label" style="margin-top:16px;">🔍 Preview</div>
+    <a class="preview-link" id="previewLink" target="_blank">Click to test (opens in new tab)</a>
+    <div class="note">
+      <strong>How it works:</strong> The <code>@</code> symbol technique exploits how browsers handle URL authentication — everything before <code>@</code> is treated as a username, the real destination follows. Subdomain masking uses a trusted domain as a subdomain prefix. The HTML method generates an actual clickable hyperlink element.
+    </div>
+  </div>
+</div>
+
+<script>
+const phishUrl    = document.getElementById('phishUrl');
+const maskDomain  = document.getElementById('maskDomain');
+const maskPath    = document.getElementById('maskPath');
+const outputBox   = document.getElementById('outputBox');
+const outputSec   = document.getElementById('outputSection');
+const previewLink = document.getElementById('previewLink');
+const generateBtn = document.getElementById('generateBtn');
+const copyBtn     = document.getElementById('copyBtn');
+const copyHtmlBtn = document.getElementById('copyHtmlBtn');
+let currentMethod = 'at';
+
+// Method selector
+document.querySelectorAll('.methods button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.methods button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMethod = btn.dataset.method;
+  });
+});
+
+function generate() {
+  const target  = phishUrl.value.trim();
+  const domain  = maskDomain.value.trim() || 'roblox.com';
+  const path    = maskPath.value.trim();
+
+  if (!target) {
+    alert('Enter a target/phishing URL first.');
+    return;
+  }
+
+  let finalUrl = '';
+  let htmlTag  = '';
+
+  switch (currentMethod) {
+    case 'at': {
+      // @ symbol mask: https://roblox.com-login@actual-phish.com
+      const masked = domain + (path ? '-' + path : '');
+      finalUrl = `https://${masked}@${target.replace(/^https?:\/\//, '')}`;
+      break;
+    }
+    case 'subdomain': {
+      // Subdomain mask: https://roblox.com.actual-phish.com/login
+      const cleanTarget = target.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+      const targetPath  = target.includes('/') ? '/' + target.split('/').slice(3).join('/') : '';
+      finalUrl = `https://${domain}.${cleanTarget}${path ? '/' + path : targetPath}`;
+      break;
+    }
+    case 'shorten': {
+      // Demonstrates masked shortened style: use @ with shorter path
+      const shortPath = path || 'verify';
+      finalUrl = `https://${domain}/${shortPath}@${target.replace(/^https?:\/\//, '')}`;
+      break;
+    }
+    case 'html': {
+      // Actual HTML hyperlink element
+      const label = domain + (path ? '/' + path : '');
+      htmlTag = `<a href="${target}" target="_blank" rel="noopener noreferrer" style="color:#58a6ff;text-decoration:underline;">${label}</a>`;
+      finalUrl = `Hyperlink HTML (see below) → ${target}`;
+      break;
+    }
+  }
+
+  // Display
+  if (currentMethod === 'html') {
+    outputBox.innerHTML = htmlTag;
+    previewLink.href = target;
+    previewLink.textContent = `🔗 ${domain}${path ? '/' + path : ''} (clickable)`;
+  } else {
+    outputBox.textContent = finalUrl;
+    previewLink.href = finalUrl;
+    previewLink.textContent = finalUrl.length > 60 ? finalUrl.substring(0, 60) + '...' : finalUrl;
+  }
+
+  outputSec.classList.add('show');
+}
+
+generateBtn.addEventListener('click', generate);
+
+copyBtn.addEventListener('click', () => {
+  const text = outputBox.textContent || outputBox.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    copyBtn.textContent = '✓ Copied!';
+    setTimeout(() => { copyBtn.textContent = '📄 Copy to Clipboard'; }, 2000);
+  });
+});
+
+copyHtmlBtn.addEventListener('click', () => {
+  const text = outputBox.innerHTML;
+  navigator.clipboard.writeText(text).then(() => {
+    copyHtmlBtn.textContent = '✓ Copied!';
+    setTimeout(() => { copyHtmlBtn.textContent = '🌐 Copy HTML Link Tag'; }, 2000);
+  });
+});
+
+// Enter key
+phishUrl.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+maskDomain.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+maskPath.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+</script>
+
+</body>
+</html>
